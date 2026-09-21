@@ -1,26 +1,134 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-50: #f0fdf4;
+  --color-brand-100: #dcfce7;
+  --color-brand-500: #22c55e;
+  --color-brand-600: #16a34a;
+  --color-brand-700: #15803d;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Default to light mode variables if needed, but Tailwind handles most */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Styling spesifik untuk kontainer Flipbook */
+.flipbook-viewport {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flipbook-container {
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+}
+
+/* Styling halaman buku (Halaman buku tetap terang meskipun mode gelap) */
+.page {
+  background-color: #fdfdfd;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+  overflow: hidden;
+  border: solid 1px #e2e8f0;
+}
+
+/* Bayangan tulang buku (spine) */
+.page.--left {
+  border-right: 0;
+  box-shadow: inset -7px 0 30px -7px rgba(0, 0, 0, 0.15);
+  border-radius: 4px 0 0 4px;
+}
+.page.--right {
+  border-left: 0;
+  box-shadow: inset 7px 0 30px -7px rgba(0, 0, 0, 0.15);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Halaman Cover (Keras) */
+.page-cover {
+  background-color: #16a34a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  padding: 2rem;
+  text-align: center;
+}
+
+.page-cover.--left {
+  border-radius: 8px 0 0 8px;
+}
+
+.page-cover.--right {
+  border-radius: 0 8px 8px 0;
+}
+
+.page-content {
+  padding: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 90%, rgba(0,0,0,0.02) 100%);
+}
+
+.page-number {
+  position: absolute;
+  bottom: 15px;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+.page.--left .page-number { left: 20px; }
+.page.--right .page-number { right: 20px; }
+
+/* Animasi masuk modal */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.modal-animate {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Mencegah scroll saat modal terbuka */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Menyembunyikan scrollbar untuk area scroll horizontal */
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* --- Trik CSS dari Referensi untuk Kestabilan React-PDF --- */
+.react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* Kunci tinggi halaman bawaan react-pdf agar tidak collapse saat loading halaman berikutnya.
+   Di-set 100% agar otomatis menyesuaikan dengan slot pixel-mati yang sudah kita patenkan di kode React */
+.react-pdf__Page {
+  min-height: 100%; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
