@@ -31,7 +31,7 @@ export default function OverviewModal({
 
   return (
     <div className="fixed inset-0 z-[60] bg-slate-900/60 dark:bg-slate-900/80 backdrop-blur-sm flex justify-center items-center p-4 transition-all">
-      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-4xl w-full mx-4 flex flex-col md:flex-row overflow-hidden modal-animate relative border border-slate-100 dark:border-slate-700">
+      <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-4xl w-full mx-4 flex flex-col md:flex-row overflow-hidden modal-animate relative border border-slate-100 dark:border-slate-700 max-h-[90vh]">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 hover:bg-red-100 hover:text-red-500 transition-colors"
@@ -53,7 +53,7 @@ export default function OverviewModal({
         </div>
 
         {/* Right Side Content */}
-        <div className="w-full md:w-3/5 p-6 md:p-10 flex flex-col relative z-10 bg-white dark:bg-slate-800">
+        <div className="w-full md:w-3/5 p-6 md:p-10 flex flex-col relative z-10 bg-white dark:bg-slate-800 overflow-y-auto custom-scrollbar">
           <div className="mb-6">
             <span className="inline-block px-3 py-1 mb-3 text-xs font-bold uppercase tracking-wider rounded-lg bg-orange-100 dark:bg-orange-500/20 text-[#FF6B4A] dark:text-orange-400">
               {book.category}
@@ -90,7 +90,7 @@ export default function OverviewModal({
             <h4 className="text-sm md:text-base font-semibold text-slate-900 dark:text-white mb-2">
               Sinopsis
             </h4>
-            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed line-clamp-6 md:line-clamp-8">
+            <p className="text-slate-600 dark:text-slate-300 text-sm md:text-base leading-relaxed text-justify">
               {book.desc}
             </p>
           </div>

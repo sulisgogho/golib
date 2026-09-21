@@ -179,10 +179,7 @@ export default function Sidebar() {
           <i className="fa-solid fa-house text-lg"></i>
           <span className="text-[10px] font-medium">Discover</span>
         </Link>
-        <a href="#" className="flex flex-col items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-          <i className="fa-solid fa-border-all text-lg"></i>
-          <span className="text-[10px] font-medium">Category</span>
-        </a>
+
         <Link
           href="/library"
           className={`flex flex-col items-center gap-1 ${
