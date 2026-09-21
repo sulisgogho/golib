@@ -83,7 +83,7 @@ export default function AdminPage() {
   };
 
   const handleEdit = (book: Book) => {
-    setEditId(book.id);
+    setEditId(String(book.id));
     setTitle(book.title || "");
     setAuthor(book.author || "");
     setCategory(book.category || "");
@@ -96,10 +96,10 @@ export default function AdminPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string | number) => {
     if (!window.confirm("Are you sure you want to delete this book?")) return;
     try {
-      await deleteDoc(doc(db, "books", id));
+      await deleteDoc(doc(db, "books", String(id)));
       setBooksList((prev) => prev.filter((book) => book.id !== id));
     } catch (error) {
       console.error("Error deleting book: ", error);

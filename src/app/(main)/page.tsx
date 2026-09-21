@@ -69,7 +69,7 @@ export default function Home() {
               lastPage: progressData.lastPage,
               totalPages: progressData.totalPages || 100, // fallback
               updatedAt: progressData.updatedAt?.toMillis() || 0
-            });
+            } as ProgressBook);
           }
         }
         pBooks.sort((a, b) => b.updatedAt - a.updatedAt);
