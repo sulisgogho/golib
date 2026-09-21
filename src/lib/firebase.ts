@@ -5,13 +5,13 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCouagxd7d4_CAWMPOqjAaMBsQXqr_yF7k",
-  authDomain: "golib-f6401.firebaseapp.com",
-  projectId: "golib-f6401",
-  storageBucket: "golib-f6401.firebasestorage.app",
-  messagingSenderId: "466682524701",
-  appId: "1:466682524701:web:e33956477e038f5c19c2f4",
-  measurementId: "G-KX8K93MYSD"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase (make sure we don't initialize multiple times in Next.js)
