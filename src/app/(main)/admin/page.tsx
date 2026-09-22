@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy } from "firebase/firestore";
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc } from "firebase/firestore";
 import { Book } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
@@ -34,9 +34,68 @@ export default function AdminPage() {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Popular Books
+  const [popularIds, setPopularIds] = useState<string[]>([]);
+  const [savingPopular, setSavingPopular] = useState(false);
+  const [popularSuccess, setPopularSuccess] = useState(false);
+
+  const fetchBooks = async () => {
+    setLoadingBooks(true);
+    try {
+      const q = query(collection(db, "books"), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+      const fetchedBooks: Book[] = [];
+      querySnapshot.forEach((docSnap) => {
+        fetchedBooks.push({ id: docSnap.id, ...docSnap.data() } as Book);
+      });
+      setBooksList(fetchedBooks);
+    } catch (error) {
+      console.error("Error fetching books: ", error);
+    } finally {
+      setLoadingBooks(false);
+    }
+  };
+
+  const loadPopular = async () => {
+    try {
+      const snap = await getDoc(doc(db, "settings", "popular"));
+      if (snap.exists()) {
+        setPopularIds(snap.data().ids || []);
+      }
+    } catch (e) {
+      console.error("Error loading popular:", e);
+    }
+  };
+
+  const savePopular = async () => {
+    setSavingPopular(true);
+    try {
+      await setDoc(doc(db, "settings", "popular"), { ids: popularIds });
+      setPopularSuccess(true);
+      setTimeout(() => setPopularSuccess(false), 3000);
+    } catch (e) {
+      console.error("Error saving popular:", e);
+    } finally {
+      setSavingPopular(false);
+    }
+  };
+
+  const togglePopular = async (id: string) => {
+    const next = popularIds.includes(id)
+      ? popularIds.filter(p => p !== id)
+      : popularIds.length >= 10 ? popularIds : [...popularIds, id];
+    setPopularIds(next);
+    try {
+      await setDoc(doc(db, "settings", "popular"), { ids: next });
+    } catch (e) {
+      console.error("Error saving popular:", e);
+    }
+  };
+
   useEffect(() => {
     if (isAdmin) {
       fetchBooks();
+      loadPopular();
     }
   }, [isAdmin]);
 
@@ -65,22 +124,6 @@ export default function AdminPage() {
     );
   }
 
-  const fetchBooks = async () => {
-    setLoadingBooks(true);
-    try {
-      const q = query(collection(db, "books"), orderBy("createdAt", "desc"));
-      const querySnapshot = await getDocs(q);
-      const fetchedBooks: Book[] = [];
-      querySnapshot.forEach((docSnap) => {
-        fetchedBooks.push({ id: docSnap.id, ...docSnap.data() } as Book);
-      });
-      setBooksList(fetchedBooks);
-    } catch (error) {
-      console.error("Error fetching books: ", error);
-    } finally {
-      setLoadingBooks(false);
-    }
-  };
 
   const handleEdit = (book: Book) => {
     setEditId(String(book.id));
@@ -435,6 +478,8 @@ export default function AdminPage() {
             /*                         LIST VIEW                              */
             /* ============================================================== */
             <div>
+
+
               <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                   <h1 className="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">
@@ -477,6 +522,7 @@ export default function AdminPage() {
                       <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-sm border-b border-slate-200 dark:border-slate-800">
                         <th className="p-4 font-semibold w-1/3">Title & Author</th>
                         <th className="p-4 font-semibold hidden md:table-cell">Category</th>
+                        <th className="p-4 font-semibold text-center">Popular</th>
                         <th className="p-4 font-semibold text-center w-24">Actions</th>
                       </tr>
                     </thead>
@@ -515,6 +561,27 @@ export default function AdminPage() {
                             </td>
                             <td className="p-4 hidden md:table-cell text-sm text-slate-600 dark:text-slate-400">
                               {book.category}
+                            </td>
+                            <td className="p-4 text-center">
+                              {(() => {
+                                const isPopular = popularIds.includes(String(book.id));
+                                return (
+                                  <button
+                                    onClick={() => togglePopular(String(book.id))}
+                                    disabled={!isPopular && popularIds.length >= 10}
+                                    title={isPopular ? `Popular #${popularIds.indexOf(String(book.id)) + 1} — click to remove` : popularIds.length >= 10 ? 'Max 10 reached' : 'Set as popular'}
+                                    className={`w-8 h-8 rounded-lg flex items-center justify-center mx-auto transition-all ${
+                                      isPopular
+                                        ? 'bg-orange-100 text-orange-500 hover:bg-red-100 hover:text-red-500'
+                                        : popularIds.length >= 10
+                                          ? 'text-slate-300 cursor-not-allowed'
+                                          : 'text-slate-300 hover:text-orange-400'
+                                    }`}
+                                  >
+                                    <i className={`fa-${isPopular ? 'solid' : 'regular'} fa-fire text-sm`}></i>
+                                  </button>
+                                );
+                              })()}
                             </td>
                             <td className="p-4">
                               <div className="flex items-center justify-center gap-2">

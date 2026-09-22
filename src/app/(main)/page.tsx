@@ -24,6 +24,7 @@ export default function Home() {
   const [dbBooks, setDbBooks] = useState<Book[]>(booksData);
   const [loading, setLoading] = useState(true);
   const [progressBooks, setProgressBooks] = useState<ProgressBook[]>([]);
+  const [popularIds, setPopularIds] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -47,6 +48,11 @@ export default function Home() {
       }
     };
     fetchBooks();
+
+    // Load popular book IDs from admin settings
+    getDoc(doc(db, "settings", "popular")).then(snap => {
+      if (snap.exists()) setPopularIds(snap.data().ids || []);
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -114,9 +120,14 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex h-full w-full">
+      <div className="flex h-full w-full relative bg-[#FDFBF7]">
+        {/* Dynamic Background Split for Desktop */}
+        <div className="hidden xl:block absolute inset-0 pointer-events-none z-0">
+          <div className="w-[55%] h-full bg-[#F1EEE3] float-left"></div>
+          <div className="w-[45%] h-full bg-[#FDFBF7] float-left"></div>
+        </div>
         {/* Main Content */}
-        <div className="relative z-10 flex-1 overflow-y-auto px-6 sm:px-12 pt-8 sm:pt-12 pb-28 md:pb-12 scrollbar-hide bg-surface-50">
+        <div className="relative z-10 flex-1 overflow-y-auto px-8 sm:px-16 xl:px-20 pt-8 sm:pt-12 pb-28 md:pb-12 scrollbar-hide">
           {/* Header */}
           <div className="flex items-center justify-between gap-4 mb-16 w-full">
             <div className="relative flex-1 max-w-sm">
@@ -219,63 +230,97 @@ export default function Home() {
             );
           })()}
 
-          {/* Popular Now */}
-          <section className="mb-20">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Popular Now</h2>
-              <div className="flex gap-2 text-surface-900">
-                <i className="fa-solid fa-circle text-[6px]"></i>
-                <i className="fa-regular fa-circle text-[6px]"></i>
+          {/* Search Results OR Normal sections */}
+          {searchQuery ? (
+            /* Search Results */
+            <section>
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">
+                  Results for &ldquo;{searchQuery}&rdquo;
+                </h2>
+                <span className="text-sm text-surface-500">{filteredBooks.length} book{filteredBooks.length !== 1 ? 's' : ''} found</span>
               </div>
-            </div>
-            <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-8 snap-x scrollbar-hide">
-              {loading ? (
-                <div className="flex justify-center w-full py-10">
-                  <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
+              <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-10 snap-x scrollbar-hide">
+                {loading ? (
+                  <div className="flex justify-center w-full py-10">
+                    <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
+                  </div>
+                ) : filteredBooks.length > 0 ? (
+                  filteredBooks.map((book) => (
+                    <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} size="large" />
+                  ))
+                ) : (
+                  <div className="w-full py-12 flex flex-col items-center justify-center text-surface-400">
+                    <i className="fa-solid fa-magnifying-glass text-3xl mb-4 opacity-40"></i>
+                    <p className="text-sm">No books match your search.</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          ) : (
+            <>
+              {/* Popular Now */}
+              <section className="mb-20">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Popular Now</h2>
+                  <div className="flex gap-2 text-surface-900">
+                    <i className="fa-solid fa-circle text-[6px]"></i>
+                    <i className="fa-regular fa-circle text-[6px]"></i>
+                  </div>
                 </div>
-              ) : dbBooks.length > 0 ? (
-                dbBooks.slice(0, 8).map((book) => (
-                  <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} size="large" />
-                ))
-              ) : (
-                <p className="text-surface-500 py-10">No books found.</p>
-              )}
-            </div>
-          </section>
+                <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-8 snap-x scrollbar-hide">
+                  {loading ? (
+                    <div className="flex justify-center w-full py-10">
+                      <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
+                    </div>
+                  ) : (() => {
+                    const popularBooks = popularIds.length > 0
+                      ? popularIds.map(id => dbBooks.find(b => String(b.id) === id)).filter(Boolean) as Book[]
+                      : dbBooks.slice(0, 8);
+                    return popularBooks.length > 0
+                      ? popularBooks.map((book) => (
+                          <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} size="large" />
+                        ))
+                      : <p className="text-surface-500 py-10">No books found.</p>;
+                  })()}
+                </div>
+              </section>
 
-          {/* Browse by Category */}
-          <section>
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Browse by category</h2>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
-              {categories.map((cat) => (
-                <CategoryPill
-                  key={cat}
-                  category={cat}
-                  isActive={activeCategory === cat}
-                  onClick={() => setActiveCategory(cat)}
-                />
-              ))}
-            </div>
+              {/* Browse by Category */}
+              <section>
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Browse by category</h2>
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                  {categories.map((cat) => (
+                    <CategoryPill
+                      key={cat}
+                      category={cat}
+                      isActive={activeCategory === cat}
+                      onClick={() => setActiveCategory(cat)}
+                    />
+                  ))}
+                </div>
 
-            <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-10 mt-6 snap-x scrollbar-hide">
-              {loading ? (
-                <div className="flex justify-center w-full py-10">
-                  <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
+                <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-10 mt-6 snap-x scrollbar-hide">
+                  {loading ? (
+                    <div className="flex justify-center w-full py-10">
+                      <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
+                    </div>
+                  ) : filteredBooks.length > 0 ? (
+                    filteredBooks.map((book) => (
+                      <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} />
+                    ))
+                  ) : (
+                    <div className="w-full py-12 flex flex-col items-center justify-center text-surface-400">
+                      <i className="fa-solid fa-book-open-reader text-3xl mb-4 opacity-40"></i>
+                      <p className="text-sm">No books in this category.</p>
+                    </div>
+                  )}
                 </div>
-              ) : filteredBooks.length > 0 ? (
-                filteredBooks.map((book) => (
-                  <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} />
-                ))
-              ) : (
-                <div className="w-full py-12 flex flex-col items-center justify-center text-surface-400">
-                  <i className="fa-solid fa-book-open-reader text-3xl mb-4 opacity-40"></i>
-                  <p className="text-sm">No books in this category.</p>
-                </div>
-              )}
-            </div>
-          </section>
+              </section>
+            </>
+          )}
         </div>
 
 

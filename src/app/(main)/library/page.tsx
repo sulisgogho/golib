@@ -79,8 +79,13 @@ export default function LibraryPage() {
   }
 
   return (
-    <div className="min-h-full bg-slate-50 dark:bg-[#0B1120] text-slate-900 dark:text-white p-6 sm:p-10 transition-colors pb-24 md:pb-10">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-full w-full relative bg-[#FDFBF7] flex flex-col">
+      {/* Dynamic Background Split for Desktop */}
+      <div className="hidden xl:block absolute inset-0 pointer-events-none z-0">
+        <div className="w-[45%] h-full bg-[#FDFBF7] float-left"></div>
+        <div className="w-[55%] h-full bg-[#F1EEE3] float-left"></div>
+      </div>
+      <div className="relative z-10 flex-1 flex flex-col px-8 sm:px-16 xl:px-20 pt-8 sm:pt-12 pb-24 md:pb-10 w-full max-w-[1920px] mx-auto overflow-y-auto scrollbar-hide">
         
         {/* Header & Tabs */}
         <div className="mb-10">

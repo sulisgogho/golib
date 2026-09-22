@@ -25,14 +25,14 @@ export default function Sidebar() {
   return (
     <>
       {/* ── Desktop Sidebar ── */}
-      <aside className="hidden lg:flex flex-col items-center w-[80px] h-full shrink-0 bg-surface-200 dark:bg-surface-950 border-r border-surface-300 dark:border-surface-800 z-20 py-8">
+      <aside className="hidden lg:flex flex-col items-center w-[80px] h-full shrink-0 bg-[#F1EEE3] dark:bg-surface-950 border-r-2 border-[#d4cfc8] dark:border-surface-800 z-20 py-8">
         {/* Logo */}
         <Link href="/" className="mb-12 text-surface-900 dark:text-white hover:text-brand-500 transition-colors">
           <i className="fa-solid fa-feather-pointed text-2xl"></i>
         </Link>
 
         {/* Main nav */}
-        <nav className="flex-1 flex flex-col items-center gap-6 w-full">
+        <nav className="flex-1 flex flex-col items-center justify-center gap-6 w-full">
           {mainNav.map((item) => (
             <Link
               key={item.href}
@@ -80,9 +80,6 @@ export default function Sidebar() {
               <i className="fa-solid fa-arrow-right-to-bracket"></i>
             </Link>
           )}
-          <button className="flex items-center justify-center w-10 h-10 rounded-full text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors">
-            <i className="fa-solid fa-bars text-xl"></i>
-          </button>
         </div>
       </aside>
 
