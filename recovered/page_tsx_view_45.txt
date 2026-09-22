@@ -1,0 +1,29 @@
+Created At: 2026-09-22T22:19:01+07:00
+Completed At: 2026-09-22T22:19:01+07:00
+File Path: `file:///c:/Users/sulis/Videos/Fullstack/GoLib/src/app/%28main%29/page.tsx`
+Total Lines: 332
+Total Bytes: 16719
+Showing lines 120 to 140
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+120:       {/* Scrollable Content */}
+121:       <div className="relative z-10 flex-1 overflow-y-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-24 md:pb-8">
+122:         {/* Simplified Navbar / Header */}
+123:         <div className="flex items-center justify-between gap-4 sm:gap-6 mb-10 w-full">
+124:           {/* Search Input */}
+125:           <div className="relative flex-1 max-w-md group">
+126:             <input
+127:               type="text"
+128:               placeholder="Search books..."
+129:               value={searchQuery}
+130:               onChange={(e) => setSearchQuery(e.target.value)}
+131:               className="w-full bg-white/60 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200 dark:border-slate-700/80 rounded-full py-3 pl-6 pr-12 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#24403B]/20 dark:focus:ring-brand-500/20 focus:border-[#24403B] dark:focus:border-brand-500 transition-all shadow-sm"
+132:             />
+133:             <button className="absolute inset-y-1 right-1 flex items-center justify-center w-10 bg-[#24403B] hover:bg-[#1a2f2b] dark:bg-brand-500 dark:hover:bg-brand-600 text-white rounded-full transition-colors shadow-sm">
+134:               <i className="fa-solid fa-search text-xs"></i>
+135:             </button>
+136:           </div>
+137: 
+138:           {/* Actions */}
+139:           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+140:             {/* Attractive Theme Toggle */}
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

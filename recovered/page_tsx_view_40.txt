@@ -1,0 +1,35 @@
+Created At: 2026-09-22T20:52:37+07:00
+Completed At: 2026-09-22T20:52:37+07:00
+File Path: `file:///c:/Users/sulis/Videos/Fullstack/GoLib/src/app/%28main%29/page.tsx`
+Total Lines: 326
+Total Bytes: 17177
+Showing lines 300 to 326
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+300:                   <i className="fa-solid fa-book-open-reader text-3xl mb-4 opacity-40"></i>
+301:                   <p className="text-sm">No books in this category.</p>
+302:                 </div>
+303:               )}
+304:             </div>
+305:           </section>
+306: 
+307:         </div>
+308: 
+309: 
+310:       </div>
+311: 
+312:       <OverviewModal
+313:         book={selectedBook}
+314:         onClose={() => setSelectedBook(null)}
+315:         onRead={() => {
+316:           if (selectedBook) {
+317:             router.push(`/read/${selectedBook.id}`);
+318:           }
+319:           setSelectedBook(null);
+320:         }}
+321:       />
+322:     </>
+323:   );
+324: }
+325: 
+326: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

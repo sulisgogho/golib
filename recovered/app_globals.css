@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Coral accent */
+  --color-brand-50:  #fdf3f2;
+  --color-brand-100: #fbe4e2;
+  --color-brand-200: #f7cac6;
+  --color-brand-300: #f0a39c;
+  --color-brand-400: #e6736a;
+  --color-brand-500: #df6861;
+  --color-brand-600: #c95952;
+  --color-brand-700: #a8423d;
+
+  /* Cream/Ink surface scale */
+  --color-surface-50:  #fdfbf7;
+  --color-surface-100: #f7f5f0;
+  --color-surface-200: #f1eee3; /* Main Background */
+  --color-surface-300: #e8e5da;
+  --color-surface-400: #d1cdbf;
+  --color-surface-500: #a19d93;
+  --color-surface-600: #666666;
+  --color-surface-700: #333333;
+  --color-surface-800: #1a1a1a;
+  --color-surface-900: #0f0f0f;
+  --color-surface-950: #000000;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   GLOBAL ANIMATIONS
+   ============================================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}

@@ -1,0 +1,158 @@
+Created At: 2026-09-22T23:04:23+07:00
+Completed At: 2026-09-22T23:04:23+07:00
+File Path: `file:///c:/Users/sulis/Videos/Fullstack/GoLib/src/app/%28main%29/page.tsx`
+Total Lines: 265
+Total Bytes: 13125
+Showing lines 1 to 150
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: "use client";
+2: 
+3: import { useState, useMemo, useEffect } from "react";
+4: import BookCard from "@/components/BookCard";
+5: import OverviewModal from "@/components/OverviewModal";
+6: import { useRouter } from "next/navigation";
+7: import { Book } from "@/types";
+8: import { db } from "@/lib/firebase";
+9: import { collection, getDocs, query, orderBy, getDoc, doc, onSnapshot } from "firebase/firestore";
+10: import { useAuth } from "@/contexts/AuthContext";
+11: import Link from "next/link";
+12: import { booksData } from "@/lib/data";
+13: 
+14: type ProgressBook = Book & { lastPage: number; totalPages: number; updatedAt: number };
+15: 
+16: export default function Home() {
+17:   const router = useRouter();
+18:   const { user } = useAuth();
+19:   
+20:   const [searchQuery, setSearchQuery] = useState("");
+21:   const [activeCategory, setActiveCategory] = useState("All Books");
+22:   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+23:   const [dbBooks, setDbBooks] = useState<Book[]>(booksData);
+24:   const [loading, setLoading] = useState(true);
+25:   const [progressBooks, setProgressBooks] = useState<ProgressBook[]>([]);
+26: 
+27:   useEffect(() => {
+28:     const fetchBooks = async () => {
+29:       try {
+30:         const q = query(collection(db, "books"), orderBy("createdAt", "desc"));
+31:         const querySnapshot = await getDocs(q);
+32:         const fetchedBooks: Book[] = [];
+33:         querySnapshot.forEach((doc) => {
+34:           fetchedBooks.push({ id: doc.id, ...doc.data() } as Book);
+35:         });
+36:         if (fetchedBooks.length > 0) {
+37:           setDbBooks(fetchedBooks);
+38:         } else {
+39:           setDbBooks(booksData); // fallback to mock data if empty
+40:         }
+41:       } catch (error) {
+42:         console.error("Error fetching books:", error);
+43:         setDbBooks(booksData);
+44:       } finally {
+45:         setLoading(false);
+46:       }
+47:     };
+48:     fetchBooks();
+49:   }, []);
+50: 
+51:   useEffect(() => {
+52:     if (!user) {
+53:       setProgressBooks([]);
+54:       return;
+55:     }
+56: 
+57:     const q = collection(db, `users/${user.uid}/readingProgress`);
+58:     const unsubscribe = onSnapshot(q, async (snapshot) => {
+59:       try {
+60:         const pBooks: ProgressBook[] = [];
+61:         for (const pDoc of snapshot.docs) {
+62:           const progressData = pDoc.data();
+63:           const bookDoc = await getDoc(doc(db, "books", pDoc.id));
+64:           if (bookDoc.exists()) {
+65:             pBooks.push({
+66:               id: pDoc.id,
+67:               ...bookDoc.data(),
+68:               lastPage: progressData.lastPage,
+69:               totalPages: progressData.totalPages || 100, // fallback
+70:               updatedAt: progressData.updatedAt?.toMillis() || 0
+71:             } as ProgressBook);
+72:           }
+73:         }
+74:         pBooks.sort((a, b) => b.updatedAt - a.updatedAt);
+75:         setProgressBooks(pBooks);
+76:       } catch (err) {
+77:         console.error("Error processing progress snapshot", err);
+78:       }
+79:     }, (error) => {
+80:       console.error("Error fetching progress real-time", error);
+81:     });
+82: 
+83:     return () => unsubscribe();
+84:   }, [user]);
+85: 
+86:   const categories = useMemo(() => {
+87:     return ["All Books", ...Array.from(new Set(dbBooks.map((b) => b.category)))];
+88:   }, [dbBooks]);
+89: 
+90:   const filteredBooks = useMemo(() => {
+91:     return dbBooks.filter((book) => {
+92:       const matchCat =
+93:         activeCategory === "All Books" || book.category === activeCategory;
+94:       const title = book.title || "";
+95:       const author = book.author || "";
+96:       const matchSearch =
+97:         title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+98:         author.toLowerCase().includes(searchQuery.toLowerCase());
+99:       return matchCat && matchSearch;
+100:     });
+101:   }, [activeCategory, searchQuery, dbBooks]);
+102: 
+103:   const popularBooks = useMemo(() => {
+104:     return dbBooks.filter(b => b.isPopular).slice(0, 10);
+105:   }, [dbBooks]);
+106: 
+107:   const toggleTheme = () => {
+108:     const isDark = document.documentElement.classList.contains("dark");
+109:     if (isDark) {
+110:       document.documentElement.classList.remove("dark");
+111:       localStorage.setItem("color-theme", "light");
+112:     } else {
+113:       document.documentElement.classList.add("dark");
+114:       localStorage.setItem("color-theme", "dark");
+115:     }
+116:   };
+117: 
+118:   const topBook = progressBooks.length > 0 
+119:     ? progressBooks[0] 
+120:     : (popularBooks.length > 0 ? popularBooks[0] : dbBooks[0]);
+121: 
+122:   return (
+123:     <div className="relative min-h-screen w-full flex flex-col bg-surface-50 dark:bg-surface-950 font-sans">
+124:       {/* Split background */}
+125:       <div className="absolute inset-0 z-0 flex pointer-events-none">
+126:         <div className="w-[55%] bg-[#FDFBF7] dark:bg-slate-900 h-full"></div>
+127:         <div className="w-[45%] bg-[#F1EEE3] dark:bg-slate-800 h-full"></div>
+128:       </div>
+129: 
+130:       {/* Scrollable Content */}
+131:       <div className="relative z-10 w-full h-full overflow-y-auto pb-24 lg:pb-8">
+132:         
+133:         {/* Header */}
+134:         <div className="flex items-center justify-between mb-12 w-full px-8 pt-8">
+135:           {/* Left Side Header */}
+136:           <div className="w-[55%] pr-8">
+137:             <div className="flex items-center gap-3">
+138:               <i className="fa-solid fa-search text-gray-400"></i>
+139:               <input 
+140:                 type="text" 
+141:                 placeholder="Search book name, author, edition..." 
+142:                 value={searchQuery}
+143:                 onChange={(e) => setSearchQuery(e.target.value)}
+144:                 className="bg-transparent outline-none w-full text-sm text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500" 
+145:               />
+146:             </div>
+147:           </div>
+148:           {/* Right Side Header */}
+149:           <div className="w-[45%] flex items-center justify-end gap-6 pl-8">
+150:             <div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push('/profile')}>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

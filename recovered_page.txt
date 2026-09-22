@@ -1,0 +1,108 @@
+Created At: 2026-09-22T16:38:27+07:00
+Completed At: 2026-09-22T16:38:28+07:00
+File Path: `file:///c:/Users/sulis/Videos/Fullstack/GoLib/src/app/%28main%29/page.tsx`
+Total Lines: 298
+Total Bytes: 14743
+Showing lines 1 to 100
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: "use client";
+2: 
+3: import { useState, useMemo, useEffect } from "react";
+4: import BookCard from "@/components/BookCard";
+5: import CategoryPill from "@/components/CategoryPill";
+6: import OverviewModal from "@/components/OverviewModal";
+7: import { useRouter } from "next/navigation";
+8: import { Book } from "@/types";
+9: import { db } from "@/lib/firebase";
+10: import { collection, getDocs, query, orderBy, getDoc, doc, onSnapshot } from "firebase/firestore";
+11: import { useAuth } from "@/contexts/AuthContext";
+12: import Link from "next/link";
+13: import { booksData } from "@/lib/data";
+14: 
+15: type ProgressBook = Book & { lastPage: number; totalPages: number; updatedAt: number };
+16: 
+17: export default function Home() {
+18:   const router = useRouter();
+19:   const { user } = useAuth();
+20:   
+21:   const [searchQuery, setSearchQuery] = useState("");
+22:   const [activeCategory, setActiveCategory] = useState("All Books");
+23:   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+24:   const [dbBooks, setDbBooks] = useState<Book[]>(booksData);
+25:   const [loading, setLoading] = useState(true);
+26:   const [progressBooks, setProgressBooks] = useState<ProgressBook[]>([]);
+27: 
+28:   useEffect(() => {
+29:     const fetchBooks = async () => {
+30:       try {
+31:         const q = query(collection(db, "books"), orderBy("createdAt", "desc"));
+32:         const querySnapshot = await getDocs(q);
+33:         const fetchedBooks: Book[] = [];
+34:         querySnapshot.forEach((doc) => {
+35:           fetchedBooks.push({ id: doc.id, ...doc.data() } as Book);
+36:         });
+37:         if (fetchedBooks.length > 0) {
+38:           setDbBooks(fetchedBooks);
+39:         } else {
+40:           setDbBooks(booksData); // fallback to mock data if empty
+41:         }
+42:       } catch (error) {
+43:         console.error("Error fetching books:", error);
+44:         setDbBooks(booksData);
+45:       } finally {
+46:         setLoading(false);
+47:       }
+48:     };
+49:     fetchBooks();
+50:   }, []);
+51: 
+52:   useEffect(() => {
+53:     if (!user) {
+54:       setProgressBooks([]);
+55:       return;
+56:     }
+57: 
+58:     const q = collection(db, `users/${user.uid}/readingProgress`);
+59:     const unsubscribe = onSnapshot(q, async (snapshot) => {
+60:       try {
+61:         const pBooks: ProgressBook[] = [];
+62:         for (const pDoc of snapshot.docs) {
+63:           const progressData = pDoc.data();
+64:           const bookDoc = await getDoc(doc(db, "books", pDoc.id));
+65:           if (bookDoc.exists()) {
+66:             pBooks.push({
+67:               id: pDoc.id,
+68:               ...bookDoc.data(),
+69:               lastPage: progressData.lastPage,
+70:               totalPages: progressData.totalPages || 100, // fallback
+71:               updatedAt: progressData.updatedAt?.toMillis() || 0
+72:             } as ProgressBook);
+73:           }
+74:         }
+75:         pBooks.sort((a, b) => b.updatedAt - a.updatedAt);
+76:         setProgressBooks(pBooks);
+77:       } catch (err) {
+78:         console.error("Error processing progress snapshot", err);
+79:       }
+80:     }, (error) => {
+81:       console.error("Error fetching progress real-time", error);
+82:     });
+83: 
+84:     return () => unsubscribe();
+85:   }, [user]);
+86: 
+87:   const categories = useMemo(() => {
+88:     return ["All Books", ...Array.from(new Set(dbBooks.map((b) => b.category)))];
+89:   }, [dbBooks]);
+90: 
+91:   const filteredBooks = useMemo(() => {
+92:     return dbBooks.filter((book) => {
+93:       const matchCat =
+94:         activeCategory === "All Books" || book.category === activeCategory;
+95:       const title = book.title || "";
+96:       const author = book.author || "";
+97:       const matchSearch =
+98:         title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+99:         author.toLowerCase().includes(searchQuery.toLowerCase());
+100:       return matchCat && matchSearch;
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

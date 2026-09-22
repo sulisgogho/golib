@@ -12,10 +12,10 @@ export default function CategoryPill({
   return (
     <button
       onClick={onClick}
-      className={`px-5 py-2 rounded-full whitespace-nowrap text-sm font-semibold transition-all shadow-sm snap-start ${
+      className={`px-5 py-2 rounded-full whitespace-nowrap text-xs font-semibold transition-all duration-200 snap-start border ${
         isActive
-          ? "bg-emerald-500 text-white shadow-[0_8px_15px_-5px_rgba(16,185,129,0.5)]"
-          : "bg-white dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
+          ? "bg-brand-500 border-brand-500 text-white shadow-sm"
+          : "bg-transparent border-surface-400 text-surface-600 hover:border-surface-600 hover:text-surface-900"
       }`}
     >
       {category}

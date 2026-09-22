@@ -1,0 +1,49 @@
+Created At: 2026-09-22T20:17:41+07:00
+Completed At: 2026-09-22T20:17:42+07:00
+File Path: `file:///c:/Users/sulis/Videos/Fullstack/GoLib/src/app/%28main%29/page.tsx`
+Total Lines: 326
+Total Bytes: 17210
+Showing lines 120 to 160
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+120:       document.documentElement.classList.add("dark");
+121:       localStorage.setItem("color-theme", "dark");
+122:     }
+123:   };
+124: 
+125:   return (
+126:     <>
+127:       <div className="flex h-full w-full relative">
+128:         {/* Dynamic Background Split for Desktop */}
+129:         <div className="hidden xl:block absolute inset-0 pointer-events-none z-0">
+130:           <div className="w-[55%] h-full bg-[#F1EEE3] float-left"></div>
+131:           <div className="w-[45%] h-full bg-[#FDFBF7] float-left"></div>
+132:         </div>
+133:         {/* Main Content */}
+134:         <div className="relative z-10 flex-1 overflow-y-auto px-8 sm:px-16 xl:px-20 pt-8 sm:pt-12 pb-28 md:pb-12 scrollbar-hide bg-transparent">
+135:           {/* Header */}
+136:           <div className="flex items-center justify-between gap-4 mb-16 w-full">
+137:             <div className="relative flex-1 max-w-sm">
+138:               <i className="fa-solid fa-search absolute left-0 top-1/2 -translate-y-1/2 text-surface-600 text-sm"></i>
+139:               <input
+140:                 type="text"
+141:                 placeholder="Search book name, author, edition..."
+142:                 value={searchQuery}
+143:                 onChange={(e) => setSearchQuery(e.target.value)}
+144:                 className="w-full bg-transparent border-none py-2.5 pl-8 pr-4 text-sm text-surface-900 placeholder-surface-500 focus:outline-none focus:ring-0"
+145:               />
+146:             </div>
+147:             {/* Actions / Profile for mobile and desktop */}
+148:             <div className="flex items-center gap-6 shrink-0">
+149:               {user ? (
+150:                 <div className="flex items-center gap-3">
+151:                   <img
+152:                     src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || "User"}&background=df6861&color=fff`}
+153:                     alt="Profile"
+154:                     className="w-10 h-10 rounded-full object-cover shrink-0"
+155:                   />
+156:                   <span className="text-sm font-medium text-surface-900 hidden sm:block">{user.displayName}</span>
+157:                 </div>
+158:               ) : (
+159:                 <Link href="/login" className="text-sm font-medium text-surface-900 hover:text-brand-500 transition-colors">Sign In</Link>
+160:               )}
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

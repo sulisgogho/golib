@@ -1,0 +1,39 @@
+Created At: 2026-09-22T22:16:01+07:00
+Completed At: 2026-09-22T22:16:01+07:00
+File Path: `file:///c:/Users/sulis/Videos/Fullstack/GoLib/src/app/%28main%29/page.tsx`
+Total Lines: 298
+Total Bytes: 15920
+Showing lines 110 to 140
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+110:   }, [activeCategory, searchQuery, dbBooks]);
+111: 
+112:   const toggleTheme = () => {
+113:     const isDark = document.documentElement.classList.contains("dark");
+114:     if (isDark) {
+115:       document.documentElement.classList.remove("dark");
+116:       localStorage.setItem("color-theme", "light");
+117:     } else {
+118:       document.documentElement.classList.add("dark");
+119:       localStorage.setItem("color-theme", "dark");
+120:     }
+121:   };
+122: 
+123:   return (
+124:     <>
+125:                 placeholder="Search book name, author, edition..."
+126:                 value={searchQuery}
+127:                 onChange={(e) => setSearchQuery(e.target.value)}
+128:                 className="w-full bg-transparent border-none py-2.5 pl-8 pr-4 text-sm text-surface-900 placeholder-surface-500 focus:outline-none focus:ring-0"
+129:               />
+130:             </div>
+131:             {/* Actions / Profile for mobile and desktop */}
+132:             <div className="flex items-center gap-6 shrink-0">
+133:               {user ? (
+134:                 <div className="flex items-center gap-3">
+135:                   <img
+136:                     src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || "User"}&background=df6861&color=fff`}
+137:                     alt="Profile"
+138:                     className="w-10 h-10 rounded-full object-cover shrink-0"
+139:                   />
+140:                   <span className="text-sm font-medium text-surface-900 hidden sm:block">{user.displayName}</span>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,89 @@
+Created At: 2026-09-22T20:17:51+07:00
+Completed At: 2026-09-22T20:17:51+07:00
+File Path: `file:///c:/Users/sulis/Videos/Fullstack/GoLib/src/app/%28main%29/page.tsx`
+Total Lines: 326
+Total Bytes: 17210
+Showing lines 170 to 250
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+170:             if (!featuredBook) return null;
+171:             return (
+172:               <div className="flex flex-col xl:flex-row gap-12 xl:gap-8 mb-24 items-center xl:items-stretch">
+173:                 {/* Left Column: Greeting */}
+174:                 <div className="w-full xl:w-[40%] flex flex-col justify-center text-center xl:text-left pr-4">
+175:                   <h1 className="font-serif text-5xl sm:text-6xl text-surface-950 mb-6 leading-[1.1]">
+176:                     Happy reading,<br />{user?.displayName?.split(" ")[0] || "Guest"}
+177:                   </h1>
+178:                   <p className="text-surface-800 text-sm sm:text-base leading-relaxed mb-8 font-medium mx-auto xl:mx-0 max-w-sm">
+179:                     Wow! you've delved deep into the wizarding world's secrets.
+180:                     Have Harry's parents died yet? Oops, looks like you're not
+181:                     there yet. Get reading now!
+182:                   </p>
+183:                   <div>
+184:                     <button
+185:                       onClick={() => router.push(`/read/${featuredBook.id}`)}
+186:                       className="bg-surface-800 hover:bg-black text-white px-6 py-3 rounded-full text-sm font-medium transition-colors inline-flex items-center gap-2 shadow-lg"
+187:                     >
+188:                       Start reading <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+189:                     </button>
+190:                   </div>
+191:                 </div>
+192: 
+193:                 {/* Center Column: The Open Book */}
+194:                 <div className="w-full xl:w-[30%] flex justify-center items-center py-10 xl:py-6 relative z-10">
+195:                    <div className="w-full max-w-[520px] aspect-[1.4] flex shadow-[30px_40px_80px_rgba(0,0,0,0.4),_0px_10px_20px_rgba(0,0,0,0.2)] rounded-sm transform md:-rotate-2 xl:scale-110 transition-transform hover:rotate-0 hover:xl:scale-110 duration-500 cursor-pointer" onClick={() => router.push(`/read/${featuredBook.id}`)}>
+196:                      {/* Left Page (Text) */}
+197:                      <div className="flex-1 bg-[#fdfdfd] border border-[#e2e8f0] border-r-0 rounded-l-md shadow-[inset_-12px_0_30px_-7px_rgba(0,0,0,0.15),inset_2px_0_5px_rgba(255,255,255,1)] overflow-hidden relative p-4 sm:p-5 text-[7px] sm:text-[9px] md:text-[10px] text-surface-700 font-serif leading-relaxed flex flex-col justify-between">
+198:                         <div>
+199:                           <div className="w-full text-center font-bold mb-4 sm:mb-6 text-surface-950 text-[9px] sm:text-[11px] tracking-widest uppercase">Chapter One</div>
+200:                           <p className="mb-3 text-justify indent-4">The boy with the lightning scar looked around the room, sensing a deep magic in the air. Every shadow seemed to hold a secret, waiting to be uncovered in the silence of the night.</p>
+201:                           <p className="mb-3 text-justify indent-4">"It's not just about the wand," the old wizard had said, his voice echoing in the boy's mind. "It's about the intent behind it. Magic is woven from willpower and imagination."</p>
+202:                           <p className="mb-3 text-justify indent-4">Suddenly, a soft glow emanated from the corner of the room, revealing a hidden passage. His heart raced with anticipation as he took a cautious step forward into the unknown.</p>
+203:                         </div>
+204:                         <div className="w-full text-center text-surface-400">1</div>
+205:                      </div>
+206:                      {/* Right Page (Image) */}
+207:                      <div className="flex-1 bg-surface-300 border border-[#e2e8f0] border-l-0 rounded-r-md shadow-[inset_12px_0_30px_-7px_rgba(0,0,0,0.2),inset_-2px_0_5px_rgba(255,255,255,0.5)] overflow-hidden relative">
+208:                        <img
+209:                          src={featuredBook.coverUrl || `https://placehold.co/400x600/${featuredBook.coverColor || "e2e8f0"}/${featuredBook.textColor || "1e293b"}?text=${encodeURIComponent((featuredBook.title || "Untitled").split(" ").join("\n"))}`}
+210:                          alt={featuredBook.title}
+211:                          className="w-full h-full object-cover"
+212:                        />
+213:                        <div className="absolute inset-0 shadow-[inset_12px_0_30px_-7px_rgba(0,0,0,0.3)] pointer-events-none"></div>
+214:                      </div>
+215:                    </div>
+216:                 </div>
+217: 
+218:                 {/* Right Column: Book Info */}
+219:                 <div className="w-full xl:w-[30%] flex flex-col justify-center text-center xl:text-left xl:pl-8">
+220:                    <h2 className="font-serif text-4xl sm:text-5xl text-surface-950 mb-6 leading-[1.1]">
+221:                      {featuredBook.title}
+222:                    </h2>
+223:                    <p className="text-brand-600 font-medium text-sm sm:text-base mb-6">
+224:                      {featuredBook.pages ? `${(progressBooks.find(b => b.id === featuredBook.id)?.lastPage || 0)} / ${featuredBook.pages} pages` : 'Ready to start'}
+225:                    </p>
+226:                    <p className="text-surface-700 font-medium text-sm sm:text-base leading-relaxed line-clamp-4 mb-6 mx-auto xl:mx-0 max-w-sm">
+227:                      {featuredBook.desc || "A magical adventure awaits you in this fascinating book. Discover secrets, explore new worlds, and meet unforgettable characters."}
+228:                    </p>
+229:                    <p className="text-surface-900 text-sm italic font-medium mx-auto xl:mx-0 xl:ml-auto">
+230:                      - {featuredBook.author}
+231:                    </p>
+232:                 </div>
+233:               </div>
+234:             );
+235:           })()}
+236: 
+237:           {/* Popular Now */}
+238:               <section className="mb-20">
+239:             <div className="flex items-center justify-between mb-6">
+240:               <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Popular Now</h2>
+241:               <div className="flex gap-4 items-center">
+242:                 <button onClick={() => scrollContainer(popularScrollRef, "left")} className="w-10 h-10 rounded-full border border-surface-300 flex items-center justify-center text-surface-900 hover:bg-surface-100 active:bg-surface-200 active:scale-90 transition-all duration-200">
+243:                   <i className="fa-solid fa-arrow-left"></i>
+244:                 </button>
+245:                 <button onClick={() => scrollContainer(popularScrollRef, "right")} className="w-10 h-10 rounded-full border border-surface-300 flex items-center justify-center text-surface-900 hover:bg-surface-100 active:bg-surface-200 active:scale-90 transition-all duration-200">
+246:                   <i className="fa-solid fa-arrow-right"></i>
+247:                 </button>
+248:               </div>
+249:             </div>
+250:             <div ref={popularScrollRef} className="flex gap-10 sm:gap-16 overflow-x-auto pt-12 pl-4 sm:pl-8 pr-6 pb-8 snap-x scrollbar-hide">
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

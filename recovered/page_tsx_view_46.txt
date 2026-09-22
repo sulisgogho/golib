@@ -1,0 +1,28 @@
+Created At: 2026-09-22T22:20:21+07:00
+Completed At: 2026-09-22T22:20:21+07:00
+File Path: `file:///c:/Users/sulis/Videos/Fullstack/GoLib/src/app/%28main%29/page.tsx`
+Total Lines: 332
+Total Bytes: 16719
+Showing lines 1 to 20
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: "use client";
+2: 
+3: import { useState, useMemo, useEffect } from "react";
+4: import BookCard from "@/components/BookCard";
+5: import CategoryPill from "@/components/CategoryPill";
+6: import OverviewModal from "@/components/OverviewModal";
+7: import { useRouter } from "next/navigation";
+8: import { Book } from "@/types";
+9: import { db } from "@/lib/firebase";
+10: import { collection, getDocs, query, orderBy, getDoc, doc, onSnapshot } from "firebase/firestore";
+11: import { useAuth } from "@/contexts/AuthContext";
+12: import Link from "next/link";
+13: import { booksData } from "@/lib/data";
+14: 
+15: type ProgressBook = Book & { lastPage: number; totalPages: number; updatedAt: number };
+16: 
+17: export default function Home() {
+18:   const router = useRouter();
+19:   const { user } = useAuth();
+20:   
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -17,7 +17,7 @@ type ProgressBook = Book & { lastPage: number; totalPages: number; updatedAt: nu
 export default function Home() {
   const router = useRouter();
   const { user } = useAuth();
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All Books");
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
@@ -114,206 +114,171 @@ export default function Home() {
 
   return (
     <>
-      {/* Sand Colored Background Shape */}
-      <div className="absolute top-0 left-0 w-full h-[50vh] bg-[#EBE6DA] dark:bg-slate-800/80 rounded-bl-[3rem] md:rounded-bl-[5rem] pointer-events-none z-0 transition-colors duration-300"></div>
-
-      {/* Scrollable Content */}
-      <div className="relative z-10 flex-1 overflow-y-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-24 md:pb-8">
-        {/* Simplified Navbar / Header */}
-        <div className="flex items-center justify-between gap-4 sm:gap-6 mb-10 w-full">
-          {/* Search Input */}
-          <div className="relative flex-1 max-w-md group">
-            <input
-              type="text"
-              placeholder="Search books..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/60 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200 dark:border-slate-700/80 rounded-full py-3 pl-6 pr-12 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#24403B]/20 dark:focus:ring-brand-500/20 focus:border-[#24403B] dark:focus:border-brand-500 transition-all shadow-sm"
-            />
-            <button className="absolute inset-y-1 right-1 flex items-center justify-center w-10 bg-[#24403B] hover:bg-[#1a2f2b] dark:bg-brand-500 dark:hover:bg-brand-600 text-white rounded-full transition-colors shadow-sm">
-              <i className="fa-solid fa-search text-xs"></i>
-            </button>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-3 sm:gap-4 shrink-0">
-            {/* Attractive Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="relative flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm border border-slate-200 dark:border-slate-700 transition-all duration-300 overflow-hidden group"
-              aria-label="Toggle Theme"
-            >
-              <div className="absolute transition-transform duration-500 ease-in-out dark:translate-y-10 dark:opacity-0 flex items-center justify-center w-full h-full text-amber-500 group-hover:rotate-45">
-                <i className="fa-solid fa-sun text-xl"></i>
-              </div>
-              <div className="absolute transition-transform duration-500 ease-in-out -translate-y-10 opacity-0 dark:translate-y-0 dark:opacity-100 flex items-center justify-center w-full h-full text-blue-400 group-hover:-rotate-12">
-                <i className="fa-solid fa-moon text-lg"></i>
-              </div>
-            </button>
-
-            {/* Notification */}
-            <button className="relative flex items-center justify-center w-11 h-11 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors shadow-sm">
-              <i className="fa-regular fa-bell text-lg"></i>
-              <span className="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-slate-800"></span>
-            </button>
-          </div>
-        </div>
-
-        {/* Disclaimer */}
-        <div className="bg-amber-100/80 dark:bg-amber-900/40 backdrop-blur-md border border-amber-200/50 dark:border-amber-700/50 rounded-2xl p-4 mb-10 flex items-start gap-4 max-w-3xl shadow-sm transition-colors">
-          <div className="bg-amber-500 text-white w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
-            <i className="fa-solid fa-exclamation text-sm"></i>
-          </div>
-          <div>
-            <h4 className="text-amber-900 dark:text-amber-400 font-bold mb-0.5 text-sm">
-              Dukung Penulis & Penerbit
-            </h4>
-            <p className="text-amber-800/80 dark:text-amber-200/70 text-xs sm:text-sm leading-relaxed">
-              Platform <strong>GoLib</strong> ditujukan sebagai media edukasi.
-              Sangat direkomendasikan untuk mendukung karya penulis dengan{" "}
-              <strong>membeli buku secara legal</strong> melalui penyedia resmi.
-            </p>
-          </div>
-        </div>
-
-        {/* Continue Reading Section */}
-        <div className="mb-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white mb-6">
-            Continue Reading
-          </h2>
-          <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 px-1 snap-x scrollbar-hide">
-            
-            {!user ? (
-              <div className="w-full max-w-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6 shadow-sm">
-                <div className="w-16 h-16 bg-brand-500/10 rounded-2xl flex items-center justify-center text-brand-500 shrink-0">
-                  <i className="fa-solid fa-lock text-2xl"></i>
+      <div className="flex h-full w-full">
+        {/* Main Content */}
+        <div className="relative z-10 flex-1 overflow-y-auto px-6 sm:px-12 pt-8 sm:pt-12 pb-28 md:pb-12 scrollbar-hide bg-surface-50">
+          {/* Header */}
+          <div className="flex items-center justify-between gap-4 mb-16 w-full">
+            <div className="relative flex-1 max-w-sm">
+              <i className="fa-solid fa-search absolute left-0 top-1/2 -translate-y-1/2 text-surface-600 text-sm"></i>
+              <input
+                type="text"
+                placeholder="Search book name, author, edition..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent border-none py-2.5 pl-8 pr-4 text-sm text-surface-900 placeholder-surface-500 focus:outline-none focus:ring-0"
+              />
+            </div>
+            {/* Actions / Profile for mobile and desktop */}
+            <div className="flex items-center gap-6 shrink-0">
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <img
+                    src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || "User"}&background=df6861&color=fff`}
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full object-cover shrink-0"
+                  />
+                  <span className="text-sm font-medium text-surface-900 hidden sm:block">{user.displayName}</span>
                 </div>
-                <div className="flex-1 text-center sm:text-left">
-                  <h3 className="font-bold text-lg mb-1">Simpan Progres Membacamu</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 sm:mb-0">Masuk dengan akun Google untuk melanjutkan buku yang sedang dibaca dari perangkat mana saja.</p>
+              ) : (
+                <Link href="/login" className="text-sm font-medium text-surface-900 hover:text-brand-500 transition-colors">Sign In</Link>
+              )}
+              <button className="text-surface-800 hover:text-brand-500 transition-colors">
+                <i className="fa-regular fa-bell text-lg"></i>
+              </button>
+            </div>
+          </div>
+
+          {/* Hero Section */}
+          {(() => {
+            const featuredBook = progressBooks.length > 0 ? progressBooks[0] : (dbBooks.length > 0 ? dbBooks[0] : null);
+            if (!featuredBook) return null;
+            return (
+              <div className="flex flex-col xl:flex-row gap-12 xl:gap-8 mb-24 items-center xl:items-stretch">
+                {/* Left Column: Greeting */}
+                <div className="w-full xl:w-1/3 flex flex-col justify-center text-center xl:text-left">
+                  <h1 className="font-serif text-5xl sm:text-6xl text-surface-950 mb-6 leading-[1.1]">
+                    Happy reading,<br />{user?.displayName?.split(" ")[0] || "Guest"}
+                  </h1>
+                  <p className="text-surface-800 text-sm sm:text-base leading-relaxed mb-8 font-medium mx-auto xl:mx-0 max-w-sm">
+                    Wow! you've delved deep into the wizarding world's secrets.
+                    Have Harry's parents died yet? Oops, looks like you're not
+                    there yet. Get reading now!
+                  </p>
+                  <div>
+                    <button
+                      onClick={() => router.push(`/read/${featuredBook.id}`)}
+                      className="bg-surface-800 hover:bg-black text-white px-6 py-3 rounded-full text-sm font-medium transition-colors inline-flex items-center gap-2 shadow-lg"
+                    >
+                      Start reading <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </button>
+                  </div>
                 </div>
-                <Link href="/login" className="whitespace-nowrap bg-brand-500 hover:bg-brand-600 text-white font-bold py-2.5 px-6 rounded-full shadow-lg shadow-brand-500/30 transition-all">
-                  Masuk
-                </Link>
-              </div>
-            ) : progressBooks.length === 0 ? (
-              <div className="w-full max-w-md bg-white dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-600 rounded-3xl p-6 flex items-center gap-4 text-slate-500 dark:text-slate-400">
-                <i className="fa-solid fa-book-open-reader text-2xl opacity-50"></i>
-                <p className="text-sm font-medium">Belum ada buku yang dibaca. Mulai petualangan pertamamu!</p>
-              </div>
-            ) : (
-              progressBooks.map((b) => {
-                const percentage = Math.min(100, Math.round((b.lastPage / b.totalPages) * 100));
-                return (
-                  <div key={b.id} onClick={() => router.push(`/read/${b.id}?page=${b.lastPage}`)} className="min-w-[300px] sm:min-w-[380px] flex-shrink-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-all flex items-center gap-4 relative overflow-hidden group snap-start cursor-pointer">
-                    <div className={`absolute top-0 right-0 w-40 h-40 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none transition-colors opacity-10 group-hover:opacity-20`} style={{ backgroundColor: `#${b.coverColor || '3b82f6'}` }}></div>
-                    
-                    <div className="w-20 h-28 rounded-xl flex-shrink-0 shadow-md transform group-hover:scale-105 transition-transform duration-300 relative overflow-hidden bg-slate-200" style={{ backgroundColor: `#${b.coverColor || '3b82f6'}` }}>
-                       <img
-                          src={b.coverUrl || `https://placehold.co/400x600/${b.coverColor || "e2e8f0"}/${b.textColor || "1e293b"}?text=${encodeURIComponent((b.title || "Untitled").split(" ").join("\n"))}`}
-                          alt={b.title}
-                          className="w-full h-full object-cover"
-                       />
-                    </div>
 
-                    <div className="flex-1 min-w-0 relative z-10">
-                      <h3 className="text-base sm:text-lg font-bold text-slate-800 dark:text-white truncate mb-0.5 group-hover:text-brand-500 transition-colors">
-                        {b.title}
-                      </h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate mb-3">
-                        {b.author}
-                      </p>
-
-                      <div className="space-y-1.5">
-                        <div className="flex justify-between text-[10px] sm:text-xs font-medium">
-                          <span className="text-slate-600 dark:text-slate-300">Hal {b.lastPage} / {b.totalPages}</span>
-                          <span className="text-brand-600 dark:text-brand-400">{percentage}%</span>
-                        </div>
-                        <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                          <div className="h-full bg-brand-500 rounded-full relative" style={{ width: `${percentage}%` }}>
-                            <div className="absolute top-0 right-0 bottom-0 left-0 bg-white/20 w-full animate-[shimmer_2s_infinite]"></div>
-                          </div>
-                        </div>
+                {/* Center Column: The Open Book */}
+                <div className="w-full xl:w-1/3 flex justify-center items-center py-6">
+                  <div className="w-full max-w-[440px] aspect-[1.4] flex shadow-[20px_30px_60px_rgba(0,0,0,0.25)] rounded-sm transform md:-rotate-2 transition-transform hover:rotate-0 duration-500 cursor-pointer" onClick={() => router.push(`/read/${featuredBook.id}`)}>
+                    {/* Left Page (Text) */}
+                    <div className="flex-1 bg-[#fdfdfd] border border-[#e2e8f0] border-r-0 rounded-l-md shadow-[inset_-12px_0_30px_-7px_rgba(0,0,0,0.15),inset_2px_0_5px_rgba(255,255,255,1)] overflow-hidden relative p-4 sm:p-5 text-[7px] sm:text-[9px] md:text-[10px] text-surface-700 font-serif leading-relaxed flex flex-col justify-between">
+                      <div>
+                        <div className="w-full text-center font-bold mb-4 sm:mb-6 text-surface-950 text-[9px] sm:text-[11px] tracking-widest uppercase">Chapter One</div>
+                        <p className="mb-3 text-justify indent-4">The boy with the lightning scar looked around the room, sensing a deep magic in the air. Every shadow seemed to hold a secret, waiting to be uncovered in the silence of the night.</p>
+                        <p className="mb-3 text-justify indent-4">"It's not just about the wand," the old wizard had said, his voice echoing in the boy's mind. "It's about the intent behind it. Magic is woven from willpower and imagination."</p>
+                        <p className="mb-3 text-justify indent-4">Suddenly, a soft glow emanated from the corner of the room, revealing a hidden passage. His heart raced with anticipation as he took a cautious step forward into the unknown.</p>
                       </div>
+                      <div className="w-full text-center text-surface-400">1</div>
+                    </div>
+                    {/* Right Page (Image) */}
+                    <div className="flex-1 bg-surface-300 border border-[#e2e8f0] border-l-0 rounded-r-md shadow-[inset_12px_0_30px_-7px_rgba(0,0,0,0.2),inset_-2px_0_5px_rgba(255,255,255,0.5)] overflow-hidden relative">
+                      <img
+                        src={featuredBook.coverUrl || `https://placehold.co/400x600/${featuredBook.coverColor || "e2e8f0"}/${featuredBook.textColor || "1e293b"}?text=${encodeURIComponent((featuredBook.title || "Untitled").split(" ").join("\n"))}`}
+                        alt={featuredBook.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 shadow-[inset_12px_0_30px_-7px_rgba(0,0,0,0.3)] pointer-events-none"></div>
                     </div>
                   </div>
-                );
-              })
-            )}
+                </div>
 
-          </div>
-        </div>
+                {/* Right Column: Book Info */}
+                <div className="w-full xl:w-1/3 flex flex-col justify-center text-center xl:text-left">
+                  <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-surface-950 mb-4 leading-snug">
+                    {featuredBook.title}
+                  </h2>
+                  <p className="text-brand-600 font-medium text-sm sm:text-base mb-6">
+                    {featuredBook.pages ? `${(progressBooks.find(b => b.id === featuredBook.id)?.lastPage || 0)} / ${featuredBook.pages} pages` : 'Ready to start'}
+                  </p>
+                  <p className="text-surface-700 text-sm sm:text-base leading-relaxed line-clamp-4 mb-6 mx-auto xl:mx-0 max-w-sm">
+                    {featuredBook.desc || "A magical adventure awaits you in this fascinating book. Discover secrets, explore new worlds, and meet unforgettable characters."}
+                  </p>
+                  <p className="text-surface-900 text-sm italic font-medium mx-auto xl:mx-0 xl:ml-auto">
+                    - {featuredBook.author}
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
 
-        {/* Book Recommendation Section */}
-        <div className="flex items-center justify-between mb-6 pr-2">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">
-            Book Recommendation
-          </h2>
-          <button className="text-xs sm:text-sm font-semibold bg-white dark:bg-slate-800 px-4 py-2 rounded-full shadow-sm hover:shadow-md dark:border dark:border-slate-700 transition-all text-slate-700 dark:text-slate-300">
-            View all <i className="fa-solid fa-chevron-right text-[10px] ml-1"></i>
-          </button>
-        </div>
-
-        <div className="flex gap-6 sm:gap-8 overflow-x-auto pb-10 pt-2 px-2 snap-x scrollbar-hide">
-          {loading ? (
-            <div className="flex justify-center w-full py-10">
-              <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-3xl"></i>
+          {/* Popular Now */}
+          <section className="mb-20">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Popular Now</h2>
+              <div className="flex gap-2 text-surface-900">
+                <i className="fa-solid fa-circle text-[6px]"></i>
+                <i className="fa-regular fa-circle text-[6px]"></i>
+              </div>
             </div>
-          ) : dbBooks.length > 0 ? (
-            dbBooks.slice(0, 8).map((book) => (
-              <BookCard
-                key={book.id}
-                book={book}
-                onClick={() => setSelectedBook(book)}
-              />
-            ))
-          ) : (
-            <p className="text-slate-500 py-10">Buku tidak ditemukan.</p>
-          )}
-        </div>
-
-        {/* Book Category Section */}
-        <div className="flex items-center justify-between mt-6 mb-4 pr-2">
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">
-            Book Category
-          </h2>
-          <button className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors">
-            <i className="fa-solid fa-sliders text-sm"></i>
-          </button>
-        </div>
-
-        <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-6 pt-2 px-2 scrollbar-hide">
-          {categories.map((cat) => (
-            <CategoryPill
-              key={cat}
-              category={cat}
-              isActive={activeCategory === cat}
-              onClick={() => setActiveCategory(cat)}
-            />
-          ))}
-        </div>
-
-        {/* Filtered Books for Category */}
-        <div className="flex gap-6 sm:gap-8 overflow-x-auto pb-10 px-2 snap-x scrollbar-hide">
-          {loading ? (
-            <div className="flex justify-center w-full py-10">
-              <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-3xl"></i>
+            <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-8 snap-x scrollbar-hide">
+              {loading ? (
+                <div className="flex justify-center w-full py-10">
+                  <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
+                </div>
+              ) : dbBooks.length > 0 ? (
+                dbBooks.slice(0, 8).map((book) => (
+                  <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} size="large" />
+                ))
+              ) : (
+                <p className="text-surface-500 py-10">No books found.</p>
+              )}
             </div>
-          ) : filteredBooks.length > 0 ? (
-            filteredBooks.map((book) => (
-              <BookCard
-                key={book.id}
-                book={book}
-                onClick={() => setSelectedBook(book)}
-              />
-            ))
-          ) : (
-            <div className="w-full py-12 flex flex-col items-center justify-center text-slate-500">
-              <i className="fa-solid fa-book-open-reader text-4xl mb-4 opacity-50"></i>
-              <p>Tidak ada buku dalam kategori ini.</p>
+          </section>
+
+          {/* Browse by Category */}
+          <section>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Browse by category</h2>
             </div>
-          )}
+            <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+              {categories.map((cat) => (
+                <CategoryPill
+                  key={cat}
+                  category={cat}
+                  isActive={activeCategory === cat}
+                  onClick={() => setActiveCategory(cat)}
+                />
+              ))}
+            </div>
+
+            <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-10 mt-6 snap-x scrollbar-hide">
+              {loading ? (
+                <div className="flex justify-center w-full py-10">
+                  <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
+                </div>
+              ) : filteredBooks.length > 0 ? (
+                filteredBooks.map((book) => (
+                  <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} />
+                ))
+              ) : (
+                <div className="w-full py-12 flex flex-col items-center justify-center text-surface-400">
+                  <i className="fa-solid fa-book-open-reader text-3xl mb-4 opacity-40"></i>
+                  <p className="text-sm">No books in this category.</p>
+                </div>
+              )}
+            </div>
+          </section>
         </div>
+
+
       </div>
 
       <OverviewModal
@@ -329,3 +294,4 @@ export default function Home() {
     </>
   );
 }
+

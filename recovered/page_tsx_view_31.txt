@@ -1,0 +1,109 @@
+Created At: 2026-09-22T18:00:36+07:00
+Completed At: 2026-09-22T18:01:23+07:00
+File Path: `file:///c:/Users/sulis/Videos/Fullstack/GoLib/src/app/%28main%29/page.tsx`
+Total Lines: 322
+Total Bytes: 17075
+Showing lines 200 to 300
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+200:                         <div className="w-full text-center text-surface-400">1</div>
+201:                      </div>
+202:                      {/* Right Page (Image) */}
+203:                      <div className="flex-1 bg-surface-300 border border-[#e2e8f0] border-l-0 rounded-r-md shadow-[inset_12px_0_30px_-7px_rgba(0,0,0,0.2),inset_-2px_0_5px_rgba(255,255,255,0.5)] overflow-hidden relative">
+204:                        <img
+205:                          src={featuredBook.coverUrl || `https://placehold.co/400x600/${featuredBook.coverColor || "e2e8f0"}/${featuredBook.textColor || "1e293b"}?text=${encodeURIComponent((featuredBook.title || "Untitled").split(" ").join("\n"))}`}
+206:                          alt={featuredBook.title}
+207:                          className="w-full h-full object-cover"
+208:                        />
+209:                        <div className="absolute inset-0 shadow-[inset_12px_0_30px_-7px_rgba(0,0,0,0.3)] pointer-events-none"></div>
+210:                      </div>
+211:                    </div>
+212:                 </div>
+213: 
+214:                 {/* Right Column: Book Info */}
+215:                 <div className="w-full xl:w-[30%] flex flex-col justify-center text-center xl:text-left xl:pl-8">
+216:                    <h2 className="font-serif text-4xl sm:text-5xl text-surface-950 mb-6 leading-[1.1]">
+217:                      {featuredBook.title}
+218:                    </h2>
+219:                    <p className="text-brand-600 font-medium text-sm sm:text-base mb-6">
+220:                      {featuredBook.pages ? `${(progressBooks.find(b => b.id === featuredBook.id)?.lastPage || 0)} / ${featuredBook.pages} pages` : 'Ready to start'}
+221:                    </p>
+222:                    <p className="text-surface-700 font-medium text-sm sm:text-base leading-relaxed line-clamp-4 mb-6 mx-auto xl:mx-0 max-w-sm">
+223:                      {featuredBook.desc || "A magical adventure awaits you in this fascinating book. Discover secrets, explore new worlds, and meet unforgettable characters."}
+224:                    </p>
+225:                    <p className="text-surface-900 text-sm italic font-medium mx-auto xl:mx-0 xl:ml-auto">
+226:                      - {featuredBook.author}
+227:                    </p>
+228:                 </div>
+229:               </div>
+230:             );
+231:           })()}
+232: 
+233:           {/* Popular Now */}
+234:               <section className="mb-20">
+235:             <div className="flex items-center justify-between mb-6">
+236:               <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Popular Now</h2>
+237:               <div className="flex gap-4 items-center">
+238:                 <button onClick={() => scrollContainer(popularScrollRef, "left")} className="w-10 h-10 rounded-full border border-surface-300 flex items-center justify-center text-surface-900 hover:bg-surface-100 active:bg-surface-200 active:scale-90 transition-all duration-200">
+239:                   <i className="fa-solid fa-arrow-left"></i>
+240:                 </button>
+241:                 <button onClick={() => scrollContainer(popularScrollRef, "right")} className="w-10 h-10 rounded-full border border-surface-300 flex items-center justify-center text-surface-900 hover:bg-surface-100 active:bg-surface-200 active:scale-90 transition-all duration-200">
+242:                   <i className="fa-solid fa-arrow-right"></i>
+243:                 </button>
+244:               </div>
+245:             </div>
+246:             <div ref={popularScrollRef} className="flex gap-10 sm:gap-16 overflow-x-auto pt-12 pl-4 sm:pl-8 pr-6 pb-8 snap-x scrollbar-hide">
+247:               {loading ? (
+248:                 <div className="flex justify-center w-full py-10">
+249:                   <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
+250:                 </div>
+251:               ) : dbBooks.length > 0 ? (
+252:                 [...dbBooks.filter(b => b.isPopular), ...dbBooks.filter(b => !b.isPopular)].slice(0, 10).map((book) => (
+253:                   <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} size="large" />
+254:                 ))
+255:               ) : (
+256:                 <p className="text-surface-500 py-10 pl-8">No books found.</p>
+257:               )}
+258:             </div>
+259:           </section>
+260: 
+261:           {/* Browse by Category */}
+262:           <section>
+263:             <div className="flex items-center justify-between mb-6">
+264:               <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Browse by category</h2>
+265:               <div className="flex gap-4 items-center">
+266:                 <button onClick={() => scrollContainer(categoryScrollRef, "left")} className="w-10 h-10 rounded-full border border-surface-300 flex items-center justify-center text-surface-900 hover:bg-surface-100 active:bg-surface-200 active:scale-90 transition-all duration-200">
+267:                   <i className="fa-solid fa-arrow-left"></i>
+268:                 </button>
+269:                 <button onClick={() => scrollContainer(categoryScrollRef, "right")} className="w-10 h-10 rounded-full border border-surface-300 flex items-center justify-center text-surface-900 hover:bg-surface-100 active:bg-surface-200 active:scale-90 transition-all duration-200">
+270:                   <i className="fa-solid fa-arrow-right"></i>
+271:                 </button>
+272:               </div>
+273:             </div>
+274:             <div className="flex gap-3 overflow-x-auto pl-4 sm:pl-8 pr-6 pb-4 scrollbar-hide">
+275:               {categories.map((cat) => (
+276:                 <CategoryPill
+277:                   key={cat}
+278:                   category={cat}
+279:                   isActive={activeCategory === cat}
+280:                   onClick={() => setActiveCategory(cat)}
+281:                 />
+282:               ))}
+283:             </div>
+284: 
+285:             <div ref={categoryScrollRef} className="flex gap-10 sm:gap-16 overflow-x-auto pt-12 pl-4 sm:pl-8 pr-6 pb-10 snap-x scrollbar-hide">
+286:               {loading ? (
+287:                 <div className="flex justify-center w-full py-10">
+288:                   <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
+289:                 </div>
+290:               ) : filteredBooks.length > 0 ? (
+291:                 filteredBooks.slice(0, 15).map((book) => (
+292:                   <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} />
+293:                 ))
+294:               ) : (
+295:                 <div className="w-full py-12 flex flex-col items-center justify-center text-surface-400">
+296:                   <i className="fa-solid fa-book-open-reader text-3xl mb-4 opacity-40"></i>
+297:                   <p className="text-sm">No books in this category.</p>
+298:                 </div>
+299:               )}
+300:             </div>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

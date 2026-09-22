@@ -1,0 +1,48 @@
+Created At: 2026-09-22T22:20:30+07:00
+Completed At: 2026-09-22T22:20:30+07:00
+File Path: `file:///c:/Users/sulis/Videos/Fullstack/GoLib/src/app/%28main%29/page.tsx`
+Total Lines: 332
+Total Bytes: 16719
+Showing lines 21 to 60
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+21:   const [searchQuery, setSearchQuery] = useState("");
+22:   const [activeCategory, setActiveCategory] = useState("All Books");
+23:   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+24:   const [dbBooks, setDbBooks] = useState<Book[]>(booksData);
+25:   const [loading, setLoading] = useState(true);
+26:   const [progressBooks, setProgressBooks] = useState<ProgressBook[]>([]);
+27: 
+28:   useEffect(() => {
+29:     const fetchBooks = async () => {
+30:       try {
+31:         const q = query(collection(db, "books"), orderBy("createdAt", "desc"));
+32:         const querySnapshot = await getDocs(q);
+33:         const fetchedBooks: Book[] = [];
+34:         querySnapshot.forEach((doc) => {
+35:           fetchedBooks.push({ id: doc.id, ...doc.data() } as Book);
+36:         });
+37:         if (fetchedBooks.length > 0) {
+38:           setDbBooks(fetchedBooks);
+39:         } else {
+40:           setDbBooks(booksData); // fallback to mock data if empty
+41:         }
+42:       } catch (error) {
+43:         console.error("Error fetching books:", error);
+44:         setDbBooks(booksData);
+45:       } finally {
+46:         setLoading(false);
+47:       }
+48:     };
+49:     fetchBooks();
+50:   }, []);
+51: 
+52:   useEffect(() => {
+53:     if (!user) {
+54:       setProgressBooks([]);
+55:       return;
+56:     }
+57: 
+58:     const q = collection(db, `users/${user.uid}/readingProgress`);
+59:     const unsubscribe = onSnapshot(q, async (snapshot) => {
+60:       try {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

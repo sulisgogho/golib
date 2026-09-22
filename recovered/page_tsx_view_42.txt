@@ -1,0 +1,68 @@
+Created At: 2026-09-22T22:13:36+07:00
+Completed At: 2026-09-22T22:13:37+07:00
+File Path: `file:///c:/Users/sulis/Videos/Fullstack/GoLib/src/app/%28main%29/page.tsx`
+Total Lines: 312
+Total Bytes: 16786
+Showing lines 1 to 60
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: "use client";
+2: 
+3: import { useState, useMemo, useEffect, useRef } from "react";
+4: import BookCard from "@/components/BookCard";
+5: import CategoryPill from "@/components/CategoryPill";
+6: import { useRouter } from "next/navigation";
+7: import { Book } from "@/types";
+8: import { db } from "@/lib/firebase";
+9: import { collection, getDocs, query, orderBy, getDoc, doc, onSnapshot } from "firebase/firestore";
+10: import { useAuth } from "@/contexts/AuthContext";
+11: import Link from "next/link";
+12: import { booksData } from "@/lib/data";
+13: 
+14: type ProgressBook = Book & { lastPage: number; totalPages: number; updatedAt: number };
+15: 
+16: export default function Home() {
+17:   const router = useRouter();
+18:   const { user } = useAuth();
+19:   
+20:   const popularScrollRef = useRef<HTMLDivElement>(null);
+21:   const categoryScrollRef = useRef<HTMLDivElement>(null);
+22: 
+23:   const scrollContainer = (ref: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
+24:     if (ref.current) {
+25:       const scrollAmount = direction === "left" ? -400 : 400;
+26:       ref.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+27:     }
+28:   };
+29:   
+30:   const [searchQuery, setSearchQuery] = useState("");
+31:   const [activeCategory, setActiveCategory] = useState("All Books");
+32:   const [dbBooks, setDbBooks] = useState<Book[]>(booksData);
+33:   const [loading, setLoading] = useState(true);
+34:   const [progressBooks, setProgressBooks] = useState<ProgressBook[]>([]);
+35: 
+36:   useEffect(() => {
+37:     const fetchBooks = async () => {
+38:       try {
+39:         const q = query(collection(db, "books"), orderBy("createdAt", "desc"));
+40:         const querySnapshot = await getDocs(q);
+41:         const fetchedBooks: Book[] = [];
+42:         querySnapshot.forEach((doc) => {
+43:           fetchedBooks.push({ id: doc.id, ...doc.data() } as Book);
+44:         });
+45:         if (fetchedBooks.length > 0) {
+46:           setDbBooks(fetchedBooks);
+47:         } else {
+48:           setDbBooks(booksData); // fallback to mock data if empty
+49:         }
+50:       } catch (error) {
+51:         console.error("Error fetching books:", error);
+52:         setDbBooks(booksData);
+53:       } finally {
+54:         setLoading(false);
+55:       }
+56:     };
+57:     fetchBooks();
+58:   }, []);
+59: 
+60:   useEffect(() => {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
