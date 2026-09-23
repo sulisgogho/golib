@@ -33,7 +33,7 @@ export default function BookCard({ book, onClick, size = "normal", percentage, s
       onClick={onClick}
       data-index={dataIndex}
     >
-      <div className={`relative w-full aspect-[2/3] rounded-sm overflow-hidden mb-6 transition-all duration-500 bg-surface-300 ${!isActive ? "group-hover:-translate-y-4 group-hover:scale-110 " + hoverClasses : ""} ${activeClasses}`}>
+      <div className={`relative w-full aspect-[2/3] rounded-sm overflow-hidden mb-6 transition-all duration-500 bg-surface-300 ${!isActive ? "group-hover:-translate-y-4 group-hover:scale-110 " + hoverClasses : ""} ${activeClasses} group-[&:first-child]:origin-left group-[&:last-child]:origin-right`}>
         <img
           src={coverUrl}
           alt={book.title}

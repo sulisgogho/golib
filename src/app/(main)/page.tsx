@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect } from "react";
 import BookCard from "@/components/BookCard";
 import CategoryPill from "@/components/CategoryPill";
-import OverviewModal from "@/components/OverviewModal";
 import { useRouter } from "next/navigation";
 import { Book } from "@/types";
 import { db } from "@/lib/firebase";
@@ -20,7 +19,6 @@ export default function Home() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All Books");
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [dbBooks, setDbBooks] = useState<Book[]>(booksData);
   const [loading, setLoading] = useState(true);
   const [progressBooks, setProgressBooks] = useState<ProgressBook[]>([]);
@@ -131,7 +129,7 @@ export default function Home() {
           <div className="w-[45%] h-full bg-[#FDFBF7] float-left"></div>
         </div>
         {/* Main Content */}
-        <div className="relative z-10 flex-1 overflow-y-auto px-8 sm:px-16 xl:px-20 pt-8 sm:pt-12 pb-28 md:pb-12 scrollbar-hide">
+        <div className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden px-8 sm:px-16 xl:px-20 pt-8 sm:pt-12 pb-28 md:pb-12 scrollbar-hide">
           {/* Header */}
           <div className="flex items-center justify-between gap-4 mb-16 w-full">
             <div className="relative flex-1 max-w-sm">
@@ -245,7 +243,7 @@ export default function Home() {
                 </h2>
                 <span className="text-sm text-surface-500">{filteredBooks.length} book{filteredBooks.length !== 1 ? 's' : ''} found</span>
               </div>
-              <div className="flex gap-6 sm:gap-10 overflow-x-auto pt-16 pb-12 snap-x scrollbar-hide relative z-10 -mt-8">
+              <div className="flex gap-6 sm:gap-10 overflow-x-auto pt-16 pb-12 snap-x scrollbar-hide relative z-10 -mt-8 -ml-2 pl-2">
                 {loading ? (
                   <div className="flex justify-center w-full py-10">
                     <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
@@ -266,14 +264,14 @@ export default function Home() {
             <>
               {/* Popular Now */}
               <section className="mb-0">
-                <div className="flex items-center justify-between mb-0 relative z-0">
+                <div className="flex items-center justify-between mb-4 md:mb-6 relative z-0">
                   <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Popular Now</h2>
                   <div className="flex gap-2 text-surface-900">
                     <i className="fa-solid fa-circle text-[6px]"></i>
                     <i className="fa-regular fa-circle text-[6px]"></i>
                   </div>
                 </div>
-                <div className="flex gap-10 sm:gap-16 overflow-x-auto pt-16 pb-12 snap-x scrollbar-hide relative z-10 -mt-8">
+                <div className="flex gap-10 sm:gap-16 overflow-x-auto pt-16 pb-12 snap-x scrollbar-hide relative z-10 -mt-8 -ml-2 pl-2">
                   {loading ? (
                     <div className="flex justify-center w-full py-10">
                       <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
@@ -285,7 +283,7 @@ export default function Home() {
                     const displayedBooks = popularBooks.slice(0, 10);
                     return displayedBooks.length > 0
                       ? displayedBooks.map((book) => (
-                          <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} size="large" />
+                          <BookCard key={book.id} book={book} onClick={() => router.push(`/book/${book.id}`)} size="large" />
                         ))
                       : <p className="text-surface-500 py-10">No books found.</p>;
                   })()}
@@ -315,7 +313,7 @@ export default function Home() {
                     </div>
                   ) : filteredBooks.length > 0 ? (
                     filteredBooks.map((book) => (
-                      <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} />
+                      <BookCard key={book.id} book={book} onClick={() => router.push(`/book/${book.id}`)} />
                     ))
                   ) : (
                     <div className="w-full py-12 flex flex-col items-center justify-center text-surface-400">
@@ -332,16 +330,6 @@ export default function Home() {
 
       </div>
 
-      <OverviewModal
-        book={selectedBook}
-        onClose={() => setSelectedBook(null)}
-        onRead={() => {
-          if (selectedBook) {
-            router.push(`/read/${selectedBook.id}`);
-          }
-          setSelectedBook(null);
-        }}
-      />
     </>
   );
 }

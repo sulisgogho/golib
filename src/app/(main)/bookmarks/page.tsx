@@ -8,13 +8,11 @@ import { db } from "@/lib/firebase";
 import { collection, doc, getDoc, onSnapshot } from "firebase/firestore";
 import { Book } from "@/types";
 import BookCard from "@/components/BookCard";
-import OverviewModal from "@/components/OverviewModal";
 
 export default function BookmarksPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [savedBooks, setSavedBooks] = useState<Book[]>([]);
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -163,7 +161,7 @@ export default function BookmarksPage() {
                 <BookCard
                   key={book.id}
                   book={book}
-                  onClick={() => setSelectedBook(book)}
+                  onClick={() => router.push(`/book/${book.id}`)}
                   size="large"
                 />
               ))}
@@ -172,16 +170,6 @@ export default function BookmarksPage() {
         </div>
       </div>
 
-      {selectedBook && (
-        <OverviewModal
-          book={selectedBook}
-          onClose={() => setSelectedBook(null)}
-          onRead={() => {
-            setSelectedBook(null);
-            router.push(`/read/${selectedBook.id}`);
-          }}
-        />
-      )}
     </div>
   );
 }
