@@ -7,12 +7,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, getDoc, doc, onSnapshot } from "firebase/firestore";
 import { Book } from "@/types";
+import BookCard from "@/components/BookCard";
 
-type Tab = "reading" | "saved" | "completed";
 type ProgressBook = Book & { lastPage: number; totalPages: number; updatedAt: number; completed?: boolean };
 
 export default function LibraryPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("reading");
   const { user, loading } = useAuth();
   const router = useRouter();
   const [progressBooks, setProgressBooks] = useState<ProgressBook[]>([]);
@@ -55,184 +54,156 @@ export default function LibraryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#0B1120] flex items-center justify-center">
-        <i className="fa-solid fa-spinner fa-spin text-4xl text-brand-500"></i>
+      <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
+        <i className="fa-solid fa-spinner fa-spin text-4xl text-surface-500"></i>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-full bg-slate-50 dark:bg-[#0B1120] text-slate-900 dark:text-white p-6 sm:p-10 transition-colors pb-24 md:pb-10 flex flex-col items-center justify-center pt-32">
+      <div className="min-h-full bg-[#FDFBF7] text-surface-900 p-6 sm:p-10 flex flex-col items-center justify-center pt-32">
         <div className="w-24 h-24 bg-brand-500/10 rounded-full flex items-center justify-center mb-6 text-brand-500">
           <i className="fa-solid fa-lock text-4xl"></i>
         </div>
         <h2 className="text-2xl font-bold mb-3">Akses Terkunci</h2>
-        <p className="text-slate-500 dark:text-slate-400 text-center max-w-md mb-8">
+        <p className="text-surface-500 text-center max-w-md mb-8">
           Silakan masuk terlebih dahulu untuk mengakses perpustakaan pribadimu, menyimpan buku, dan melacak progres membaca.
         </p>
-        <Link href="/login" className="bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-brand-500/30 transition-all active:scale-95 flex items-center gap-2">
+        <Link href="/login" className="bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-brand-500/30 transition-all flex items-center gap-2">
           <i className="fa-solid fa-arrow-right-to-bracket"></i> Masuk Sekarang
         </Link>
       </div>
     );
   }
 
+  const featuredBook = progressBooks.length > 0 ? progressBooks[0] : null;
+
   return (
     <div className="min-h-full w-full relative bg-[#FDFBF7] flex flex-col">
-      {/* Dynamic Background Split for Desktop */}
+      {/* Background Split */}
       <div className="hidden xl:block absolute inset-0 pointer-events-none z-0">
         <div className="w-[45%] h-full bg-[#FDFBF7] float-left"></div>
         <div className="w-[55%] h-full bg-[#F1EEE3] float-left"></div>
       </div>
-      <div className="relative z-10 flex-1 flex flex-col px-8 sm:px-16 xl:px-20 pt-8 sm:pt-12 pb-24 md:pb-10 w-full max-w-[1920px] mx-auto overflow-y-auto scrollbar-hide">
+      
+      <div className="relative z-10 flex-1 flex flex-col px-8 sm:px-16 xl:px-20 pt-8 sm:pt-12 pb-8 w-full max-w-[1920px] mx-auto overflow-y-auto scrollbar-hide">
         
-        {/* Header & Tabs */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-extrabold mb-6">My Library</h1>
-          <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800">
-            <button
-              onClick={() => setActiveTab("reading")}
-              className={`px-6 py-3 text-sm font-semibold transition-all relative ${
-                activeTab === "reading"
-                  ? "text-brand-600 dark:text-brand-400"
-                  : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
-              }`}
-            >
-              Continue Reading
-              {activeTab === "reading" && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-500 rounded-t-full"></span>
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("saved")}
-              className={`px-6 py-3 text-sm font-semibold transition-all relative ${
-                activeTab === "saved"
-                  ? "text-brand-600 dark:text-brand-400"
-                  : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
-              }`}
-            >
-              Saved Books
-              {activeTab === "saved" && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-500 rounded-t-full"></span>
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("completed")}
-              className={`px-6 py-3 text-sm font-semibold transition-all relative ${
-                activeTab === "completed"
-                  ? "text-brand-600 dark:text-brand-400"
-                  : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"
-              }`}
-            >
-              Completed
-              {activeTab === "completed" && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-500 rounded-t-full"></span>
-              )}
-            </button>
-          </div>
+        {/* Header / Top Bar */}
+        <div className="flex items-center justify-between gap-4 mb-8 w-full">
+            <div className="relative flex-1 max-w-sm">
+              <i className="fa-solid fa-search absolute left-0 top-1/2 -translate-y-1/2 text-surface-600 text-sm"></i>
+              <input
+                type="text"
+                placeholder="Search book name, author, edition..."
+                className="w-full bg-transparent border-none py-2.5 pl-8 pr-4 text-sm text-surface-900 placeholder-surface-500 focus:outline-none focus:ring-0"
+              />
+            </div>
+            {/* Actions / Profile */}
+            <div className="flex items-center gap-6 shrink-0">
+              <div className="flex items-center gap-3">
+                <img
+                  src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || "User"}&background=df6861&color=fff`}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full object-cover shrink-0"
+                />
+                <span className="text-sm font-medium text-surface-900 hidden sm:block">{user.displayName}</span>
+              </div>
+              <button className="text-surface-800 hover:text-brand-500 transition-colors">
+                <i className="fa-regular fa-bell text-lg"></i>
+              </button>
+            </div>
         </div>
 
-        {/* Content Area */}
-        <div>
-          {activeTab === "reading" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
-              {progressBooks.filter(b => !b.completed).length === 0 ? (
-                <div className="col-span-full py-10 flex flex-col items-center justify-center text-slate-500">
-                  <i className="fa-solid fa-book-open-reader text-4xl mb-4 opacity-50"></i>
-                  <p>Tidak ada buku yang sedang dibaca.</p>
-                </div>
-              ) : (
-                progressBooks.filter(b => !b.completed).map(b => {
-                  const percentage = Math.min(100, Math.round((b.lastPage / b.totalPages) * 100));
-                  return (
-                    <div key={b.id} className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl flex gap-5 hover:shadow-md transition-all group">
-                      <div className="w-20 h-28 rounded-lg flex-shrink-0 shadow-sm relative overflow-hidden bg-slate-200" style={{ backgroundColor: `#${b.coverColor || '3b82f6'}` }}>
-                        <img
-                          src={b.coverUrl || `https://placehold.co/400x600/${b.coverColor || "e2e8f0"}/${b.textColor || "1e293b"}?text=${encodeURIComponent((b.title || "Untitled").split(" ").join("\n"))}`}
-                          alt={b.title}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1 flex flex-col justify-between py-1">
-                        <div>
-                          <h3 className="font-bold text-slate-800 dark:text-white line-clamp-1 mb-1">{b.title}</h3>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{b.author}</p>
-                        </div>
-                        <div className="mt-4">
-                          <div className="flex justify-between text-xs font-medium mb-1.5">
-                            <span className="text-slate-600 dark:text-slate-300">Hal {b.lastPage} / {b.totalPages}</span>
-                            <span className="text-brand-600 dark:text-brand-400">{percentage}%</span>
-                          </div>
-                          <div className="h-2 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-3">
-                            <div className="h-full bg-brand-500 rounded-full relative" style={{ width: `${percentage}%` }}>
-                              <div className="absolute top-0 right-0 bottom-0 left-0 bg-white/20 w-full animate-[shimmer_2s_infinite]"></div>
-                            </div>
-                          </div>
-                          <button onClick={() => router.push(`/read/${b.id}?page=${b.lastPage}`)} className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 group-hover:underline">
-                            Continue reading <i className="fa-solid fa-arrow-right ml-1"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-
-            </div>
-          )}
-
-          {activeTab === "saved" && (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 text-slate-400">
-                <i className="fa-solid fa-bookmark text-3xl"></i>
+        {/* Hero Section */}
+        <div className="flex flex-col xl:flex-row items-start gap-12 xl:gap-24 mb-8">
+          {/* Left Hero */}
+          <div className="w-full xl:w-[45%] flex flex-col pr-0 xl:pr-10">
+            <h1 className="font-serif text-5xl sm:text-6xl text-surface-950 mb-6 leading-tight">
+              Keep the story going..
+            </h1>
+            <p className="text-surface-700 text-sm leading-relaxed mb-8 max-w-md">
+              Don't let the story end just yet. Continue reading your last book and immerse yourself in the world of literature.
+            </p>
+            {featuredBook && (
+              <div>
+                <button
+                  onClick={() => router.push(`/read/${featuredBook.id}?page=${featuredBook.lastPage}`)}
+                  className="bg-[#2D2D2D] hover:bg-black text-white px-6 py-2.5 rounded-full text-sm font-medium transition-colors inline-flex items-center gap-2"
+                >
+                  Start reading <i className="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                </button>
               </div>
-              <h3 className="text-lg font-bold mb-2">No Saved Books</h3>
-              <p className="text-slate-500 text-sm max-w-sm mb-6">
-                You haven&apos;t saved any books yet. Explore the discovery page and tap the bookmark icon to save books for later.
-              </p>
-              <Link href="/" className="bg-brand-600 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-brand-700 transition-colors">
-                Explore Books
-              </Link>
-            </div>
-          )}
-
-          {activeTab === "completed" && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-              
-              {progressBooks.filter(b => b.completed).length === 0 ? (
-                <div className="col-span-full py-10 flex flex-col items-center justify-center text-slate-500">
-                  <i className="fa-solid fa-award text-4xl mb-4 opacity-50"></i>
-                  <p>Belum ada buku yang diselesaikan.</p>
+            )}
+          </div>
+          
+          {/* Right Hero (Author info) */}
+          {featuredBook && (
+            <div className="w-full xl:w-[55%] flex flex-col pt-2">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-300">
+                  <img src={`https://ui-avatars.com/api/?name=${featuredBook.author}&background=random`} alt={featuredBook.author} className="w-full h-full object-cover" />
                 </div>
-              ) : (
-                progressBooks.filter(b => b.completed).map(b => (
-                  <div key={b.id} onClick={() => router.push(`/read/${b.id}`)} className="cursor-pointer bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-2xl group flex flex-col hover:shadow-md transition-all">
-                    <div className="w-full aspect-[2/3] rounded-lg mb-4 flex items-center justify-center text-white shadow-sm relative overflow-hidden" style={{ backgroundColor: `#${b.coverColor || '8b5cf6'}` }}>
-                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white to-transparent"></div>
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
-                        <div className="bg-brand-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg flex items-center gap-1.5">
-                          <i className="fa-solid fa-check"></i> Selesai
-                        </div>
-                      </div>
-                      <span className="font-bold text-center text-sm px-2 relative z-10">{b.title}</span>
-                    </div>
-                    <h3 className="font-bold text-sm text-slate-800 dark:text-white line-clamp-1 mb-1 group-hover:text-brand-500 transition-colors">{b.title}</h3>
-                    <p className="text-[10px] text-slate-500 dark:text-slate-400 mb-3">{b.author}</p>
-                    <div className="mt-auto flex items-center gap-1 text-[10px] font-medium text-amber-500">
-                      <i className="fa-solid fa-star"></i>
-                      <i className="fa-solid fa-star"></i>
-                      <i className="fa-solid fa-star"></i>
-                      <i className="fa-solid fa-star"></i>
-                      <i className="fa-solid fa-star-half-stroke"></i>
-                    </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-surface-950">{featuredBook.author}</h3>
+                    <button className="text-surface-500 hover:text-surface-950"><i className="fa-solid fa-ellipsis"></i></button>
                   </div>
-                ))
-              )}
-
+                  <p className="text-xs text-surface-500 mb-4">author</p>
+                  <p className="text-sm text-surface-700 leading-relaxed italic max-w-lg">
+                    "{featuredBook.title}" tells the story of an amazing journey. It's a must-read for anyone who loves literature and wants to explore new worlds. 
+                  </p>
+                </div>
+              </div>
             </div>
           )}
+        </div>
+
+        {/* Carousel Navigation */}
+        <div className="flex justify-end gap-8 pr-4 xl:pr-10 items-center -mt-10 relative z-20">
+          <button className="text-surface-600 hover:text-surface-950 transition-colors">
+            <i className="fa-solid fa-arrow-left-long text-xl"></i>
+          </button>
+          <button className="w-12 h-12 flex items-center justify-center rounded-full border border-surface-300 text-surface-600 hover:text-surface-950 hover:border-surface-950 transition-colors">
+            <i className="fa-solid fa-arrow-right-long text-xl"></i>
+          </button>
+        </div>
+
+        {/* Book Carousel */}
+        <div className="flex gap-10 sm:gap-16 overflow-x-auto pt-16 pb-12 snap-x scrollbar-hide flex-1 relative z-10 -mt-8">
+          {progressBooks.length > 0 ? (
+            progressBooks.map((book, idx) => {
+               const percentage = Math.min(100, Math.round((book.lastPage / book.totalPages) * 100));
+               
+               return (
+                  <BookCard
+                    key={book.id}
+                    book={book}
+                    size="large"
+                    titleLines={1}
+                    percentage={percentage}
+                    subtitle={`${book.lastPage} / ${book.totalPages}`}
+                    onClick={() => router.push(`/read/${book.id}?page=${book.lastPage}`)}
+                  />
+               )
+            })
+          ) : (
+            <div className="w-full py-20 flex flex-col items-center justify-center text-surface-500">
+              <i className="fa-solid fa-book-open text-4xl mb-4 opacity-30"></i>
+              <p>You haven't started reading any books yet.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between border-t border-surface-200 pt-6 mt-4 pb-12 md:pb-0">
+          <div className="flex items-center gap-2 text-xs text-surface-600">
+            <i className="fa-solid fa-circle-info"></i>
+            <p>Got chance to check out the <span className="text-brand-500 underline decoration-brand-500/50 underline-offset-2 font-medium cursor-pointer">new collection</span> of Harry Potter? It's a must-read for any fan of the series, don't miss out!</p>
+          </div>
+          <div className="text-xs text-surface-600 font-medium whitespace-nowrap">
+            <span className="text-brand-500">{String(progressBooks.length).padStart(2, '0')}</span> / 60 books
+          </div>
         </div>
 
       </div>

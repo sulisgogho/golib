@@ -49,10 +49,14 @@ export default function Home() {
     };
     fetchBooks();
 
-    // Load popular book IDs from admin settings
-    getDoc(doc(db, "settings", "popular")).then(snap => {
+    // Load popular book IDs from admin settings (real-time)
+    const unsubPopular = onSnapshot(doc(db, "settings", "popular"), (snap) => {
       if (snap.exists()) setPopularIds(snap.data().ids || []);
-    }).catch(() => {});
+    }, (error) => {
+      console.error("Error fetching popular settings:", error);
+    });
+
+    return () => unsubPopular();
   }, []);
 
   useEffect(() => {
@@ -165,7 +169,7 @@ export default function Home() {
             const featuredBook = progressBooks.length > 0 ? progressBooks[0] : (dbBooks.length > 0 ? dbBooks[0] : null);
             if (!featuredBook) return null;
             return (
-              <div className="flex flex-col xl:flex-row gap-12 xl:gap-8 mb-24 items-center xl:items-stretch">
+              <div className="flex flex-col xl:flex-row gap-12 xl:gap-8 mb-12 items-center xl:items-stretch">
                 {/* Left Column: Greeting */}
                 <div className="w-full xl:w-1/3 flex flex-col justify-center text-center xl:text-left">
                   <h1 className="font-serif text-5xl sm:text-6xl text-surface-950 mb-6 leading-[1.1]">
@@ -213,7 +217,7 @@ export default function Home() {
 
                 {/* Right Column: Book Info */}
                 <div className="w-full xl:w-1/3 flex flex-col justify-center text-center xl:text-left">
-                  <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-surface-950 mb-4 leading-snug">
+                  <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl text-surface-950 mb-4 leading-snug">
                     {featuredBook.title}
                   </h2>
                   <p className="text-brand-600 font-medium text-sm sm:text-base mb-6">
@@ -234,13 +238,13 @@ export default function Home() {
           {searchQuery ? (
             /* Search Results */
             <section>
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-0 relative z-0">
                 <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">
                   Results for &ldquo;{searchQuery}&rdquo;
                 </h2>
                 <span className="text-sm text-surface-500">{filteredBooks.length} book{filteredBooks.length !== 1 ? 's' : ''} found</span>
               </div>
-              <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-10 snap-x scrollbar-hide">
+              <div className="flex gap-6 sm:gap-10 overflow-x-auto pt-16 pb-12 snap-x scrollbar-hide relative z-10 -mt-8">
                 {loading ? (
                   <div className="flex justify-center w-full py-10">
                     <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
@@ -260,15 +264,15 @@ export default function Home() {
           ) : (
             <>
               {/* Popular Now */}
-              <section className="mb-20">
-                <div className="flex items-center justify-between mb-8">
+              <section className="mb-8">
+                <div className="flex items-center justify-between mb-0 relative z-0">
                   <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Popular Now</h2>
                   <div className="flex gap-2 text-surface-900">
                     <i className="fa-solid fa-circle text-[6px]"></i>
                     <i className="fa-regular fa-circle text-[6px]"></i>
                   </div>
                 </div>
-                <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-8 snap-x scrollbar-hide">
+                <div className="flex gap-10 sm:gap-16 overflow-x-auto pt-16 pb-12 snap-x scrollbar-hide relative z-10 -mt-8">
                   {loading ? (
                     <div className="flex justify-center w-full py-10">
                       <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
@@ -276,9 +280,10 @@ export default function Home() {
                   ) : (() => {
                     const popularBooks = popularIds.length > 0
                       ? popularIds.map(id => dbBooks.find(b => String(b.id) === id)).filter(Boolean) as Book[]
-                      : dbBooks.slice(0, 8);
-                    return popularBooks.length > 0
-                      ? popularBooks.map((book) => (
+                      : dbBooks.slice(0, 10);
+                    const displayedBooks = popularBooks.slice(0, 10);
+                    return displayedBooks.length > 0
+                      ? displayedBooks.map((book) => (
                           <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} size="large" />
                         ))
                       : <p className="text-surface-500 py-10">No books found.</p>;
@@ -291,7 +296,7 @@ export default function Home() {
                 <div className="flex items-center justify-between mb-8">
                   <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Browse by category</h2>
                 </div>
-                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide relative z-0">
                   {categories.map((cat) => (
                     <CategoryPill
                       key={cat}
@@ -302,7 +307,7 @@ export default function Home() {
                   ))}
                 </div>
 
-                <div className="flex gap-6 sm:gap-10 overflow-x-auto pb-10 mt-6 snap-x scrollbar-hide">
+                <div className="flex gap-6 sm:gap-10 overflow-x-auto pt-16 pb-12 snap-x scrollbar-hide relative z-10 -mt-10">
                   {loading ? (
                     <div className="flex justify-center w-full py-10">
                       <i className="fa-solid fa-circle-notch fa-spin text-brand-500 text-2xl"></i>
