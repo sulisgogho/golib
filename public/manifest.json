@@ -1,0 +1,23 @@
+{
+  "name": "GoLib - Perpustakaan Digital",
+  "short_name": "GoLib",
+  "description": "Platform GoLib ditujukan sebagai media edukasi dan perpustakaan digital.",
+  "theme_color": "#df6861",
+  "background_color": "#FDFBF7",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

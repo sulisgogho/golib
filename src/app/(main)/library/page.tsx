@@ -15,6 +15,7 @@ export default function LibraryPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [progressBooks, setProgressBooks] = useState<ProgressBook[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const visibleIndicesRef = useRef<Set<number>>(new Set());
@@ -108,7 +109,7 @@ export default function LibraryPage() {
   };
 
   const scrollRight = () => {
-    if (carouselRef.current && activeIndex < progressBooks.length - 1) {
+    if (carouselRef.current && activeIndex < filteredProgressBooks.length - 1) {
       isScrollingRef.current = true;
       const newIndex = activeIndex + 1;
       setActiveIndex(newIndex);
@@ -134,7 +135,11 @@ export default function LibraryPage() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [activeIndex]);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [searchQuery]);
 
   if (loading) {
     return (
@@ -160,7 +165,13 @@ export default function LibraryPage() {
       </div>
     );
   }
-  const featuredBook = progressBooks.length > 0 ? progressBooks[activeIndex] || progressBooks[0] : null;
+
+  const filteredProgressBooks = progressBooks.filter(book => 
+    book.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    book.author.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const featuredBook = filteredProgressBooks.length > 0 ? filteredProgressBooks[activeIndex] || filteredProgressBooks[0] : null;
 
   return (
     <div className="flex h-full w-full relative bg-[#FDFBF7]">
@@ -178,7 +189,9 @@ export default function LibraryPage() {
               <i className="fa-solid fa-search absolute left-0 top-1/2 -translate-y-1/2 text-surface-600 text-sm"></i>
               <input
                 type="text"
-                placeholder="Search book name, author, edition..."
+                placeholder="Search book name, author..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-transparent border-none py-2.5 pl-8 pr-4 text-sm text-surface-900 placeholder-surface-500 focus:outline-none focus:ring-0"
               />
             </div>
@@ -257,8 +270,8 @@ export default function LibraryPage() {
           {/* Mobile start spacer */}
           <div className="shrink-0 w-[calc(50vw-128px)] sm:hidden"></div>
           
-          {progressBooks.length > 0 ? (
-            progressBooks.map((book, idx) => {
+          {filteredProgressBooks.length > 0 ? (
+            filteredProgressBooks.map((book, idx) => {
                const percentage = Math.min(100, Math.round((book.lastPage / book.totalPages) * 100));
                
                return (
@@ -286,10 +299,10 @@ export default function LibraryPage() {
         </div>
 
         {/* Book Count Indicator */}
-        {progressBooks.length > 0 && (
+        {filteredProgressBooks.length > 0 && (
           <div className="flex justify-end mt-4 xl:-mt-2 relative z-20">
             <span className="text-surface-950 font-bold text-lg">
-              <span className="text-[#D5635C]">{String(activeIndex + 1).padStart(2, '0')}</span>/{String(progressBooks.length).padStart(2, '0')} books
+              <span className="text-[#D5635C]">{String(activeIndex + 1).padStart(2, '0')}</span>/{String(filteredProgressBooks.length).padStart(2, '0')} books
             </span>
           </div>
         )}

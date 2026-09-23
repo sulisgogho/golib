@@ -18,6 +18,11 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "GoLib — Digital Library",
   description: "Perpustakaan digital modern. Baca buku kapan saja, di mana saja.",
+  manifest: "/manifest.json",
+};
+
+export const viewport = {
+  themeColor: "#df6861",
 };
 
 import { AuthProvider } from "@/contexts/AuthContext";
