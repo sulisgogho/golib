@@ -14,6 +14,7 @@ const mainNav: NavItem[] = [
   { href: "/", icon: "fa-solid fa-house", label: "Discover" },
   { href: "/library", icon: "fa-solid fa-book", label: "My Library" },
   { href: "/bookmarks", icon: "fa-regular fa-bookmark", label: "Bookmarks" },
+  { href: "/requests", icon: "fa-solid fa-envelope-open-text", label: "Request Book" },
 ];
 
 export default function Sidebar() {
@@ -21,7 +22,7 @@ export default function Sidebar() {
   const { user, isAdmin, signOut } = useAuth();
 
   const isActive = (href: string) => pathname === href;
-  const isWhiteBg = pathname === "/library" || pathname === "/bookmarks";
+  const isWhiteBg = pathname === "/library" || pathname === "/bookmarks" || pathname === "/requests";
 
   return (
     <>

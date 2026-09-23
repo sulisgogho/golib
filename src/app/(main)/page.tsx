@@ -174,10 +174,8 @@ export default function Home() {
                     <span className="font-bold">Happy reading,</span> <br />
                     <span className="text-[#D5635C] font-normal">{user?.displayName?.split(" ")[0] || "Guest"}</span>.
                   </h1>
-                  <p className="text-surface-800 text-sm sm:text-base leading-relaxed mb-8 font-medium mx-auto xl:mx-0 max-w-sm">
-                    Wow! you've delved deep into the wizarding world's secrets.
-                    Have Harry's parents died yet? Oops, looks like you're not
-                    there yet. Get reading now!
+                  <p className="text-surface-800 text-sm sm:text-base leading-relaxed mb-8 font-medium mx-auto xl:mx-0 max-w-md">
+                    Platform GoLib ditujukan sebagai media edukasi. Sangat direkomendasikan untuk mendukung karya penulis dengan membeli buku secara legal melalui penyedia resmi.
                   </p>
                   <div>
                     <button
@@ -250,7 +248,7 @@ export default function Home() {
                   </div>
                 ) : filteredBooks.length > 0 ? (
                   filteredBooks.map((book) => (
-                    <BookCard key={book.id} book={book} onClick={() => setSelectedBook(book)} size="large" />
+                    <BookCard key={book.id} book={book} onClick={() => router.push(`/book/${book.id}`)} size="large" />
                   ))
                 ) : (
                   <div className="w-full py-12 flex flex-col items-center justify-center text-surface-400">

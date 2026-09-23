@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const userRef = doc(db, "users", currentUser.uid);
           const snap = await getDoc(userRef);
           
-          let initialData: any = {
+          const initialData: any = {
             displayName: currentUser.displayName,
             email: currentUser.email,
             photoURL: currentUser.photoURL,
