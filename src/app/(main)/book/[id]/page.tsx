@@ -133,7 +133,7 @@ export default function BookOverviewPage() {
     <div className="flex flex-col min-h-screen bg-[#F4F1E8] dark:bg-slate-900 overflow-x-hidden w-full mx-auto">
       
       {/* Top Beige Area (Navbar + Spacer) */}
-      <div className="w-full flex flex-col relative z-0 h-[35vh] min-h-[250px] md:h-[65vh] md:min-h-[450px]">
+      <div className="w-full flex flex-col relative z-0 h-[35vh] min-h-[250px] lg:h-[65vh] lg:min-h-[450px]">
         
         {/* Header / Navbar */}
         <div className="flex items-center justify-between gap-4 w-full px-6 md:px-12 pt-8 shrink-0">
@@ -170,7 +170,7 @@ export default function BookOverviewPage() {
         <div className="w-full flex-1 relative mt-4 md:mt-8">
           <div className="w-full lg:w-[85%] xl:w-[75%] mx-auto relative h-full px-6 md:px-0">
             {/* Back Button */}
-            <button onClick={() => router.back()} className="absolute top-0 left-6 md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 transition-colors">
+            <button onClick={() => router.back()} className="absolute top-0 left-6 lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 transition-colors">
               <i className="fa-solid fa-arrow-left text-slate-700 dark:text-slate-300"></i>
             </button>
           </div>
@@ -180,43 +180,43 @@ export default function BookOverviewPage() {
       {/* Main White Card */}
       <div className="bg-white dark:bg-slate-950 w-full lg:w-[85%] xl:w-[75%] mx-auto flex-1 px-6 md:px-12 pt-0 pb-20 relative z-10 md:rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.05)] dark:shadow-none">
         {/* Wrapper to shift ALL content upwards relative to the white card */}
-        <div className="-mt-48 md:-mt-[450px] relative z-20">
+        <div className="-mt-48 lg:-mt-[450px] relative z-20">
           
           {/* Desktop Back Button */}
-          <button onClick={() => router.back()} className="hidden md:flex absolute top-36 -left-12 w-10 h-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 transition-colors z-50">
+          <button onClick={() => router.back()} className="hidden lg:flex absolute top-36 -left-12 w-10 h-10 items-center justify-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 transition-colors z-50">
             <i className="fa-solid fa-arrow-left text-slate-700 dark:text-slate-300"></i>
           </button>
 
           {/* Top Info Section (Cover + Title) */}
-          <div className="flex flex-col md:flex-row gap-8 md:gap-12 relative pb-0 md:pb-0 border-b border-transparent">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative pb-0 lg:pb-0 border-b border-transparent">
             
             {/* Left cover container (Overlapping the white card) */}
-            <div className="w-full md:w-[45%] flex justify-center md:justify-end relative mb-8 md:mb-0 mt-12 md:mt-36">
-               <div className="w-[180px] sm:w-[220px] md:w-full max-w-[280px] shadow-2xl rounded-sm overflow-hidden">
+            <div className="w-full lg:w-[45%] flex justify-center lg:justify-end relative mb-8 lg:mb-0 mt-12 lg:mt-36">
+               <div className="w-[180px] sm:w-[220px] md:w-[260px] lg:w-full max-w-[280px] shadow-2xl rounded-sm overflow-hidden">
                   <img src={coverUrl} className="w-full h-auto object-cover" alt="Cover" />
                </div>
             </div>
             
             {/* Right text info */}
-            <div className="w-full md:w-[55%] flex flex-col justify-center">
+            <div className="w-full lg:w-[55%] flex flex-col justify-center">
                <h1 className="text-4xl md:text-5xl font-serif text-slate-900 dark:text-white mb-4 leading-[1.1]">{book.title}</h1>
                <h3 className="text-xl font-bold text-slate-700 dark:text-slate-300 mb-4">{book.author}</h3>
-               <p className="text-slate-600 dark:text-slate-400 italic max-w-xl text-lg mb-8 md:mb-0">
+               <p className="text-slate-600 dark:text-slate-400 italic max-w-xl text-lg mb-8 lg:mb-0">
                   Explore this amazing book and dive into an unforgettable journey. A thrilling adventure awaits you.
                </p>
             </div>
           </div>
           
           {/* Bottom Content Section Wrapper */}
-          <div className="mt-0 md:-mt-[90px] relative z-30 flex flex-col w-full">
+          <div className="mt-0 lg:-mt-[90px] relative z-30 flex flex-col w-full">
           
              {/* Action Buttons Row */}
-             <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+             <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
                 {/* Empty spacer for desktop to offset the overlapping cover */}
-                <div className="hidden md:block md:w-[45%]"></div>
+                <div className="hidden lg:block lg:w-[45%]"></div>
 
                 {/* Content */}
-                <div className="w-full md:w-[55%] flex flex-col">
+                <div className="w-full lg:w-[55%] flex flex-col">
                   
                    {/* Trial Notice (if any) */}
              {user && userData && !userData.isApproved && trialDaysLeft > 0 && (
