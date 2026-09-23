@@ -7,20 +7,33 @@ interface BookCardProps {
   percentage?: number;
   subtitle?: React.ReactNode;
   titleLines?: 1 | 2;
+  "data-index"?: number;
+  isActive?: boolean;
 }
 
-export default function BookCard({ book, onClick, size = "normal", percentage, subtitle, titleLines = 2 }: BookCardProps) {
+export default function BookCard({ book, onClick, size = "normal", percentage, subtitle, titleLines = 2, "data-index": dataIndex, isActive = false }: BookCardProps) {
   const coverUrl = book.coverUrl || `https://placehold.co/400x600/${book.coverColor || "27272a"}/${book.textColor || "fafafa"
     }?text=${encodeURIComponent((book.title || "Untitled").split(" ").join("\n"))}`;
 
   const widthClass = size === "large" ? "w-40 sm:w-56" : "w-32 sm:w-40";
 
+  const activeClasses = isActive 
+    ? "-translate-y-4 scale-110 shadow-[20px_40px_70px_rgba(0,0,0,0.65)]"
+    : size === "large" 
+      ? "shadow-[10px_15px_30px_rgba(0,0,0,0.4)]" 
+      : "shadow-[5px_5px_15px_rgba(0,0,0,0.15)]";
+
+  const hoverClasses = size === "large"
+    ? "group-hover:shadow-[20px_40px_70px_rgba(0,0,0,0.65)]"
+    : "group-hover:shadow-[15px_25px_50px_rgba(0,0,0,0.4)]";
+
   return (
     <div
-      className={`${widthClass} flex-shrink-0 cursor-pointer snap-start group relative z-0 hover:z-50`}
+      className={`${widthClass} flex-shrink-0 cursor-pointer max-sm:snap-center sm:snap-start group relative ${isActive ? "z-50" : "z-0 hover:z-50"}`}
       onClick={onClick}
+      data-index={dataIndex}
     >
-      <div className={`relative w-full aspect-[2/3] rounded-sm overflow-hidden mb-6 transition-all duration-500 bg-surface-300 group-hover:-translate-y-4 group-hover:scale-110 ${size === "large" ? "shadow-[10px_15px_30px_rgba(0,0,0,0.4)] group-hover:shadow-[20px_40px_70px_rgba(0,0,0,0.65)]" : "shadow-[5px_5px_15px_rgba(0,0,0,0.15)] group-hover:shadow-[15px_25px_50px_rgba(0,0,0,0.4)]"}`}>
+      <div className={`relative w-full aspect-[2/3] rounded-sm overflow-hidden mb-6 transition-all duration-500 bg-surface-300 ${!isActive ? "group-hover:-translate-y-4 group-hover:scale-110 " + hoverClasses : ""} ${activeClasses}`}>
         <img
           src={coverUrl}
           alt={book.title}
@@ -42,7 +55,6 @@ export default function BookCard({ book, onClick, size = "normal", percentage, s
           <div className="w-full bg-surface-200 h-1.5 rounded-full overflow-hidden">
             <div className="bg-brand-500 h-full rounded-full transition-all duration-500" style={{ width: `${percentage}%` }}></div>
           </div>
-          <div className="text-right text-[10px] text-surface-500 mt-1">{percentage}% completed</div>
         </div>
       )}
     </div>

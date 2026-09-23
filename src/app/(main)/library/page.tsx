@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,6 +15,10 @@ export default function LibraryPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [progressBooks, setProgressBooks] = useState<ProgressBook[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const visibleIndicesRef = useRef<Set<number>>(new Set());
+  const isScrollingRef = useRef(false);
   
   useEffect(() => {
     if (!user) {
@@ -52,6 +56,86 @@ export default function LibraryPage() {
     return () => unsubscribe();
   }, [user]);
 
+  useEffect(() => {
+    if (!carouselRef.current) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        let changed = false;
+        entries.forEach((entry) => {
+          if (entry.target.hasAttribute("data-index")) {
+            const idx = Number(entry.target.getAttribute("data-index"));
+            if (!isNaN(idx)) {
+              if (entry.isIntersecting) {
+                visibleIndicesRef.current.add(idx);
+                changed = true;
+              } else {
+                visibleIndicesRef.current.delete(idx);
+                changed = true;
+              }
+            }
+          }
+        });
+        
+        if (changed && visibleIndicesRef.current.size > 0 && !isScrollingRef.current) {
+          setActiveIndex(Math.min(...Array.from(visibleIndicesRef.current)));
+        }
+      },
+      {
+        root: carouselRef.current,
+        threshold: 0.5,
+      }
+    );
+
+    const children = carouselRef.current.children;
+    Array.from(children).forEach((child) => observer.observe(child));
+
+    return () => observer.disconnect();
+  }, [progressBooks]);
+
+  const scrollLeft = () => {
+    if (carouselRef.current && activeIndex > 0) {
+      isScrollingRef.current = true;
+      const newIndex = activeIndex - 1;
+      setActiveIndex(newIndex);
+      // Add 1 to the index to account for the mobile spacer div at the start of the container
+      const child = carouselRef.current.children[newIndex + 1] as HTMLElement;
+      if (child) {
+        child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: window.innerWidth < 640 ? "center" : "start" });
+      }
+      setTimeout(() => { isScrollingRef.current = false; }, 600);
+    }
+  };
+
+  const scrollRight = () => {
+    if (carouselRef.current && activeIndex < progressBooks.length - 1) {
+      isScrollingRef.current = true;
+      const newIndex = activeIndex + 1;
+      setActiveIndex(newIndex);
+      // Add 1 to the index to account for the mobile spacer div at the start of the container
+      const child = carouselRef.current.children[newIndex + 1] as HTMLElement;
+      if (child) {
+        child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: window.innerWidth < 640 ? "center" : "start" });
+      }
+      setTimeout(() => { isScrollingRef.current = false; }, 600);
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        const btn = document.getElementById("carousel-btn-left");
+        if (btn) btn.click();
+      } else if (e.key === "ArrowRight") {
+        const btn = document.getElementById("carousel-btn-right");
+        if (btn) btn.click();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FDFBF7]">
@@ -76,18 +160,17 @@ export default function LibraryPage() {
       </div>
     );
   }
-
-  const featuredBook = progressBooks.length > 0 ? progressBooks[0] : null;
+  const featuredBook = progressBooks.length > 0 ? progressBooks[activeIndex] || progressBooks[0] : null;
 
   return (
-    <div className="min-h-full w-full relative bg-[#FDFBF7] flex flex-col">
+    <div className="flex h-full w-full relative bg-[#FDFBF7]">
       {/* Background Split */}
       <div className="hidden xl:block absolute inset-0 pointer-events-none z-0">
         <div className="w-[45%] h-full bg-[#FDFBF7] float-left"></div>
         <div className="w-[55%] h-full bg-[#F1EEE3] float-left"></div>
       </div>
       
-      <div className="relative z-10 flex-1 flex flex-col px-8 sm:px-16 xl:px-20 pt-8 sm:pt-12 pb-8 w-full max-w-[1920px] mx-auto overflow-y-auto scrollbar-hide">
+      <div className="relative z-10 flex-1 overflow-y-auto px-8 sm:px-16 xl:px-20 pt-8 sm:pt-12 pb-28 md:pb-12 w-full max-w-[1920px] mx-auto scrollbar-hide">
         
         {/* Header / Top Bar */}
         <div className="flex items-center justify-between gap-4 mb-8 w-full">
@@ -119,10 +202,10 @@ export default function LibraryPage() {
         <div className="flex flex-col xl:flex-row items-start gap-12 xl:gap-24 mb-8">
           {/* Left Hero */}
           <div className="w-full xl:w-[45%] flex flex-col pr-0 xl:pr-10">
-            <h1 className="font-serif text-5xl sm:text-6xl text-surface-950 mb-6 leading-tight">
-              Keep the story going..
+            <h1 className="text-3xl sm:text-5xl lg:text-[64px] leading-[1.1] font-bold text-surface-950 tracking-tight mb-6 whitespace-nowrap">
+              Keep the <span className="font-serif italic text-brand-500 font-light mr-2">story</span>going..
             </h1>
-            <p className="text-surface-700 text-sm leading-relaxed mb-8 max-w-md">
+            <p className="text-lg font-semibold text-surface-600 mb-8 max-w-xl">
               Don't let the story end just yet. Continue reading your last book and immerse yourself in the world of literature.
             </p>
             {featuredBook && (
@@ -139,19 +222,19 @@ export default function LibraryPage() {
           
           {/* Right Hero (Author info) */}
           {featuredBook && (
-            <div className="w-full xl:w-[55%] flex flex-col pt-2">
-              <div className="flex items-start gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 bg-surface-300">
+            <div className="w-full xl:w-[55%] flex flex-col pt-2 xl:pl-32">
+              <div className="flex items-start gap-5 mb-4">
+                <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-surface-300">
                   <img src={`https://ui-avatars.com/api/?name=${featuredBook.author}&background=random`} alt={featuredBook.author} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-surface-950">{featuredBook.author}</h3>
+                    <h3 className="font-bold text-surface-950 text-xl">{featuredBook.author}</h3>
                     <button className="text-surface-500 hover:text-surface-950"><i className="fa-solid fa-ellipsis"></i></button>
                   </div>
-                  <p className="text-xs text-surface-500 mb-4">author</p>
-                  <p className="text-sm text-surface-700 leading-relaxed italic max-w-lg">
-                    "{featuredBook.title}" tells the story of an amazing journey. It's a must-read for anyone who loves literature and wants to explore new worlds. 
+                  <p className="text-sm text-surface-500 mb-4">author</p>
+                  <p className="text-base text-surface-700 leading-relaxed italic w-full line-clamp-3">
+                    {featuredBook.desc}
                   </p>
                 </div>
               </div>
@@ -160,17 +243,20 @@ export default function LibraryPage() {
         </div>
 
         {/* Carousel Navigation */}
-        <div className="flex justify-end gap-8 pr-4 xl:pr-10 items-center -mt-10 relative z-20">
-          <button className="text-surface-600 hover:text-surface-950 transition-colors">
+        <div className="flex justify-end gap-8 items-center -mt-10 relative z-20">
+          <button id="carousel-btn-left" onClick={scrollLeft} className="w-12 h-12 flex items-center justify-center rounded-full border border-surface-300 text-surface-600 hover:text-surface-950 hover:border-surface-950 transition-colors">
             <i className="fa-solid fa-arrow-left-long text-xl"></i>
           </button>
-          <button className="w-12 h-12 flex items-center justify-center rounded-full border border-surface-300 text-surface-600 hover:text-surface-950 hover:border-surface-950 transition-colors">
+          <button id="carousel-btn-right" onClick={scrollRight} className="w-12 h-12 flex items-center justify-center rounded-full border border-surface-300 text-surface-600 hover:text-surface-950 hover:border-surface-950 transition-colors">
             <i className="fa-solid fa-arrow-right-long text-xl"></i>
           </button>
         </div>
 
         {/* Book Carousel */}
-        <div className="flex gap-10 sm:gap-16 overflow-x-auto pt-16 pb-12 snap-x scrollbar-hide flex-1 relative z-10 -mt-8">
+        <div ref={carouselRef} className="flex gap-10 sm:gap-16 overflow-x-auto pt-16 pb-4 snap-x scrollbar-hide relative z-10 -mt-8">
+          {/* Mobile start spacer */}
+          <div className="shrink-0 w-[calc(50vw-128px)] sm:hidden"></div>
+          
           {progressBooks.length > 0 ? (
             progressBooks.map((book, idx) => {
                const percentage = Math.min(100, Math.round((book.lastPage / book.totalPages) * 100));
@@ -180,32 +266,33 @@ export default function LibraryPage() {
                     key={book.id}
                     book={book}
                     size="large"
+                    isActive={idx === activeIndex}
                     titleLines={1}
+                    data-index={idx}
                     percentage={percentage}
                     subtitle={`${book.lastPage} / ${book.totalPages}`}
                     onClick={() => router.push(`/read/${book.id}?page=${book.lastPage}`)}
                   />
-               )
+               );
             })
           ) : (
-            <div className="w-full py-20 flex flex-col items-center justify-center text-surface-500">
-              <i className="fa-solid fa-book-open text-4xl mb-4 opacity-30"></i>
-              <p>You haven't started reading any books yet.</p>
+            <div className="w-full text-center py-20 text-surface-500 italic">
+              Belum ada buku yang sedang dibaca.
             </div>
           )}
+          
+          {/* Mobile end spacer */}
+          <div className="shrink-0 w-[calc(50vw-128px)] sm:hidden"></div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between border-t border-surface-200 pt-6 mt-4 pb-12 md:pb-0">
-          <div className="flex items-center gap-2 text-xs text-surface-600">
-            <i className="fa-solid fa-circle-info"></i>
-            <p>Got chance to check out the <span className="text-brand-500 underline decoration-brand-500/50 underline-offset-2 font-medium cursor-pointer">new collection</span> of Harry Potter? It's a must-read for any fan of the series, don't miss out!</p>
+        {/* Book Count Indicator */}
+        {progressBooks.length > 0 && (
+          <div className="flex justify-end mt-4 xl:-mt-2 relative z-20">
+            <span className="text-surface-950 font-bold text-lg">
+              <span className="text-[#D5635C]">{String(activeIndex + 1).padStart(2, '0')}</span>/{String(progressBooks.length).padStart(2, '0')} books
+            </span>
           </div>
-          <div className="text-xs text-surface-600 font-medium whitespace-nowrap">
-            <span className="text-brand-500">{String(progressBooks.length).padStart(2, '0')}</span> / 60 books
-          </div>
-        </div>
-
+        )}
       </div>
     </div>
   );

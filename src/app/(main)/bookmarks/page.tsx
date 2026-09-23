@@ -94,7 +94,7 @@ export default function BookmarksPage() {
         <div className="flex flex-col w-full">
 
           {/* Top Bar (Search + Profile) */}
-          <div className="w-full flex flex-col-reverse md:flex-row items-center justify-between gap-6 md:gap-0 mb-10 xl:mb-14">
+          <div className="w-full flex flex-col-reverse md:flex-row items-center justify-between gap-6 md:gap-0 mb-4 xl:mb-6">
             {/* Search (Left/White area) */}
             <div className="w-full xl:w-[45%] mb-6 xl:mb-0">
               <div className="relative max-w-sm">
@@ -164,7 +164,7 @@ export default function BookmarksPage() {
                   key={book.id}
                   book={book}
                   onClick={() => setSelectedBook(book)}
-                  size="medium"
+                  size="large"
                 />
               ))}
             </div>

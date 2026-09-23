@@ -172,8 +172,9 @@ export default function Home() {
               <div className="flex flex-col xl:flex-row gap-12 xl:gap-8 mb-12 items-center xl:items-stretch">
                 {/* Left Column: Greeting */}
                 <div className="w-full xl:w-1/3 flex flex-col justify-center text-center xl:text-left">
-                  <h1 className="font-serif text-5xl sm:text-6xl text-surface-950 mb-6 leading-[1.1]">
-                    Happy reading,<br />{user?.displayName?.split(" ")[0] || "Guest"}
+                  <h1 className="font-serif text-5xl sm:text-6xl text-surface-950 mb-4 sm:mb-8 leading-[1.1]">
+                    <span className="font-bold">Happy reading,</span> <br />
+                    <span className="text-[#D5635C] font-normal">{user?.displayName?.split(" ")[0] || "Guest"}</span>.
                   </h1>
                   <p className="text-surface-800 text-sm sm:text-base leading-relaxed mb-8 font-medium mx-auto xl:mx-0 max-w-sm">
                     Wow! you've delved deep into the wizarding world's secrets.
@@ -264,7 +265,7 @@ export default function Home() {
           ) : (
             <>
               {/* Popular Now */}
-              <section className="mb-8">
+              <section className="mb-0">
                 <div className="flex items-center justify-between mb-0 relative z-0">
                   <h2 className="text-2xl sm:text-3xl font-serif text-surface-950">Popular Now</h2>
                   <div className="flex gap-2 text-surface-900">

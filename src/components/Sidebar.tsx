@@ -84,8 +84,8 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* ── Mobile Bottom Bar ── */}
-      <nav className="lg:hidden fixed bottom-0 left-0 w-full z-50 flex items-center justify-around px-2 py-3 bg-surface-100 dark:bg-surface-900 border-t border-surface-300 dark:border-surface-800 shadow-[0_-8px_40px_rgba(0,0,0,0.05)] rounded-t-2xl">
+      {/* ── Mobile Bottom Bar (Floating Pill) ── */}
+      <nav className="lg:hidden fixed bottom-6 left-4 right-4 z-50 flex items-center justify-around px-4 py-3 bg-white/80 dark:bg-surface-900/80 backdrop-blur-xl border border-surface-200 dark:border-surface-700 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] rounded-full">
         {mainNav.map((item) => (
           <Link
             key={item.href}
