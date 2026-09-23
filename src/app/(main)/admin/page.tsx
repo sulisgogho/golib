@@ -34,6 +34,11 @@ export default function AdminPage() {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  type UserDoc = { id: string; displayName: string; email: string; photoURL: string; lastLoginAt: string; createdAt?: string; isApproved?: boolean; };
+  const [usersList, setUsersList] = useState<UserDoc[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [activeTab, setActiveTab] = useState<"books" | "users">("books");
+
   // Popular Books
   const [popularIds, setPopularIds] = useState<string[]>([]);
   const [savingPopular, setSavingPopular] = useState(false);
@@ -92,10 +97,49 @@ export default function AdminPage() {
     }
   };
 
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const q = query(collection(db, "users"), orderBy("lastLoginAt", "desc"));
+      const querySnapshot = await getDocs(q);
+      const fetched: UserDoc[] = [];
+      querySnapshot.forEach((docSnap) => {
+        fetched.push({ id: docSnap.id, ...docSnap.data() } as UserDoc);
+      });
+      setUsersList(fetched);
+    } catch (error) {
+      console.error("Error fetching users: ", error);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const toggleApproval = async (userId: string, currentStatus: boolean | undefined) => {
+    try {
+      await updateDoc(doc(db, "users", userId), {
+        isApproved: !currentStatus
+      });
+      setUsersList(prev => prev.map(u => u.id === userId ? { ...u, isApproved: !currentStatus } : u));
+    } catch (error) {
+      console.error("Error toggling approval:", error);
+    }
+  };
+
+  const deleteUser = async (userId: string) => {
+    if (!confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+    try {
+      await deleteDoc(doc(db, "users", userId));
+      setUsersList(prev => prev.filter(u => u.id !== userId));
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
   useEffect(() => {
     if (isAdmin) {
       fetchBooks();
       loadPopular();
+      fetchUsers();
     }
   }, [isAdmin]);
 
@@ -478,8 +522,24 @@ export default function AdminPage() {
             /*                         LIST VIEW                              */
             /* ============================================================== */
             <div>
+              {/* Tabs Navigation */}
+              <div className="flex gap-8 mb-8 border-b border-slate-200 dark:border-slate-800">
+                <button
+                  onClick={() => setActiveTab("books")}
+                  className={`pb-4 px-2 font-bold transition-colors border-b-2 ${activeTab === "books" ? "border-brand-500 text-brand-500" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"}`}
+                >
+                  <i className="fa-solid fa-book mr-2"></i> Manage Library
+                </button>
+                <button
+                  onClick={() => setActiveTab("users")}
+                  className={`pb-4 px-2 font-bold transition-colors border-b-2 ${activeTab === "users" ? "border-brand-500 text-brand-500" : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300"}`}
+                >
+                  <i className="fa-solid fa-users mr-2"></i> Registered Users
+                </button>
+              </div>
 
-
+              {activeTab === "books" ? (
+                <>
               <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                   <h1 className="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">
@@ -608,6 +668,85 @@ export default function AdminPage() {
                   </table>
                 </div>
               </div>
+                </>
+              ) : (
+                <>
+                  <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                      <h1 className="text-3xl font-extrabold text-slate-800 dark:text-white mb-2">Registered Users</h1>
+                      <p className="text-slate-500 dark:text-slate-400">View all users who have signed in and their last login time.</p>
+                    </div>
+                  </div>
+                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-sm">
+                            <th className="p-4 font-semibold">User Profile</th>
+                            <th className="p-4 font-semibold">Email Address</th>
+                            <th className="p-4 font-semibold hidden md:table-cell">Status</th>
+                            <th className="p-4 font-semibold hidden md:table-cell">Last Login</th>
+                            <th className="p-4 font-semibold text-center">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {loadingUsers ? (
+                            <tr><td colSpan={5} className="p-8 text-center"><i className="fa-solid fa-spinner fa-spin text-2xl text-brand-500"></i></td></tr>
+                          ) : usersList.length === 0 ? (
+                            <tr><td colSpan={5} className="p-8 text-center text-slate-500">No users found.</td></tr>
+                          ) : (
+                            usersList.map((u) => {
+                              const created = new Date(u.createdAt || u.lastLoginAt).getTime();
+                              const now = new Date().getTime();
+                              const diffDays = (now - created) / (1000 * 3600 * 24);
+                              const isTrialValid = diffDays <= 7;
+                              const statusColor = u.isApproved ? "bg-green-100 text-green-700" : (isTrialValid ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700");
+                              const statusText = u.isApproved ? "Approved" : (isTrialValid ? "Trial" : "Expired");
+
+                              return (
+                                <tr key={u.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                  <td className="p-4">
+                                    <div className="flex items-center gap-3">
+                                      <img src={u.photoURL || `https://ui-avatars.com/api/?name=${u.displayName || "User"}`} alt="avatar" className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-200" referrerPolicy="no-referrer" />
+                                      <span className="font-semibold text-slate-800 dark:text-white">{u.displayName || "Anonymous"}</span>
+                                    </div>
+                                  </td>
+                                  <td className="p-4 text-slate-600 dark:text-slate-300">{u.email}</td>
+                                  <td className="p-4 hidden md:table-cell text-sm">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${statusColor}`}>
+                                      {statusText}
+                                    </span>
+                                  </td>
+                                  <td className="p-4 hidden md:table-cell text-sm text-slate-500">
+                                    {new Date(u.lastLoginAt).toLocaleString("id-ID")}
+                                  </td>
+                                  <td className="p-4 text-center">
+                                    <div className="flex items-center justify-center gap-2">
+                                      <button
+                                        onClick={() => toggleApproval(u.id, u.isApproved)}
+                                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${u.isApproved ? "bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50" : "bg-brand-50 text-brand-600 hover:bg-brand-100 dark:bg-brand-900/30 dark:hover:bg-brand-900/50"}`}
+                                      >
+                                        {u.isApproved ? "Revoke" : "Approve"}
+                                      </button>
+                                      <button
+                                        onClick={() => deleteUser(u.id)}
+                                        className="w-9 h-9 flex-shrink-0 rounded-lg bg-slate-100 text-red-500 hover:bg-red-100 dark:bg-slate-800 dark:text-red-400 dark:hover:bg-red-900/30 flex items-center justify-center transition-colors"
+                                        title="Delete User"
+                                      >
+                                        <i className="fa-solid fa-trash"></i>
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           )}
 

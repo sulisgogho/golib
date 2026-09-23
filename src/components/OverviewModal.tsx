@@ -1,5 +1,7 @@
 import { Book } from "@/types";
 import { useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface OverviewModalProps {
   book: Book | null;
@@ -12,6 +14,9 @@ export default function OverviewModal({
   onClose,
   onRead,
 }: OverviewModalProps) {
+  const { user, userData, canRead, trialDaysLeft } = useAuth();
+  const router = useRouter();
+
   useEffect(() => {
     if (book) {
       document.body.classList.add("modal-open");
@@ -95,29 +100,60 @@ export default function OverviewModal({
             </p>
           </div>
 
-          <div className="mt-auto flex gap-3">
-            <button
-              onClick={() => {
-                const btn = document.getElementById(`save-btn-${book.id}`);
-                if (btn) {
-                  btn.innerHTML = '<i class="fa-solid fa-bookmark"></i>';
-                  btn.classList.add("text-brand-500", "bg-brand-50", "dark:bg-brand-500/10");
-                  btn.classList.remove("text-slate-500", "dark:text-slate-400");
-                }
-              }}
-              id={`save-btn-${book.id}`}
-              className="w-14 h-[56px] flex-shrink-0 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl flex justify-center items-center transition-colors text-lg"
-              title="Simpan ke Library"
-            >
-              <i className="fa-regular fa-bookmark"></i>
-            </button>
-            <button
-              onClick={onRead}
-              className="flex-1 bg-[#24403B] hover:bg-[#1a2f2b] text-white font-bold py-4 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2"
-            >
-              <span>Baca Sekarang</span>
-              <i className="fa-solid fa-book-open"></i>
-            </button>
+          <div className="mt-auto">
+            {user && userData && !userData.isApproved && trialDaysLeft > 0 && (
+              <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-xl text-sm flex items-center gap-2 border border-blue-100 dark:border-blue-800">
+                <i className="fa-solid fa-clock-rotate-left"></i>
+                <span>Sisa masa trial Anda: <strong>{trialDaysLeft} hari</strong></span>
+              </div>
+            )}
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  const btn = document.getElementById(`save-btn-${book.id}`);
+                  if (btn) {
+                    btn.innerHTML = '<i class="fa-solid fa-bookmark"></i>';
+                    btn.classList.add("text-brand-500", "bg-brand-50", "dark:bg-brand-500/10");
+                    btn.classList.remove("text-slate-500", "dark:text-slate-400");
+                  }
+                }}
+                id={`save-btn-${book.id}`}
+                className="w-14 h-[56px] flex-shrink-0 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl flex justify-center items-center transition-colors text-lg"
+                title="Simpan ke Library"
+              >
+                <i className="fa-regular fa-bookmark"></i>
+              </button>
+              <button
+                onClick={() => {
+                  if (!user) {
+                    onClose();
+                    router.push("/login");
+                  } else if (!canRead) {
+                    // Do nothing or alert
+                    alert("Masa trial habis. Silakan hubungi admin ke email goghotech123@gmail.com");
+                  } else {
+                    onRead();
+                  }
+                }}
+                className={`flex-1 font-bold py-4 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2 ${
+                  !user 
+                    ? "bg-[#24403B] hover:bg-[#1a2f2b] text-white" 
+                    : !canRead 
+                      ? "bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400 cursor-not-allowed"
+                      : "bg-[#24403B] hover:bg-[#1a2f2b] text-white"
+                }`}
+              >
+                <span>
+                  {!user 
+                    ? "Login untuk Membaca" 
+                    : !canRead 
+                      ? "Trial Habis - Hubungi Admin" 
+                      : "Baca Sekarang"}
+                </span>
+                <i className={`fa-solid ${!user ? "fa-lock" : !canRead ? "fa-envelope" : "fa-book-open"}`}></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -6,10 +6,12 @@ import { Book } from "@/types";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import dynamic from "next/dynamic";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PdfViewer = dynamic(() => import("@/components/PdfViewer"), { ssr: false });
 
 export default function ReadPage() {
+  const { user, canRead, loading: authLoading } = useAuth();
   const params = useParams();
   const router = useRouter();
   const [book, setBook] = useState<Book | null>(null);
@@ -57,13 +59,21 @@ export default function ReadPage() {
     fetchBook();
   }, [bookId]);
 
-  if (loading) {
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace("/login");
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
         <i className="fa-solid fa-spinner fa-spin text-4xl text-brand-500"></i>
       </div>
     );
   }
+
+  if (!user) return null; // Wait for redirect to happen
 
   if (!book) {
     return (
@@ -72,6 +82,25 @@ export default function ReadPage() {
         <button onClick={() => router.back()} className="px-6 py-2 bg-brand-500 text-white rounded-full">
           Kembali
         </button>
+      </div>
+    );
+  }
+
+  if (user && !canRead) {
+    return (
+      <div className="min-h-screen w-full bg-slate-100 dark:bg-slate-900 flex flex-col items-center justify-center px-4 text-center">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl max-w-md w-full border border-slate-200 dark:border-slate-700">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i className="fa-solid fa-lock text-2xl"></i>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">Akses Terkunci</h1>
+          <p className="text-slate-600 dark:text-slate-300 mb-8 leading-relaxed">
+            Masa trial 7 hari Anda telah habis. Silakan hubungi admin ke email <strong className="text-brand-500 select-all">goghotech123@gmail.com</strong> untuk berlangganan dan melanjutkan membaca.
+          </p>
+          <button onClick={() => router.back()} className="w-full px-6 py-3 bg-[#24403B] hover:bg-[#1a2f2b] text-white font-bold rounded-xl transition-colors shadow-lg">
+            Kembali
+          </button>
+        </div>
       </div>
     );
   }
